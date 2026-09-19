@@ -388,8 +388,10 @@
 
 <!-- Firebase (compat build, matches leaderboard.js's pattern) -->
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
+<script src="zelos-xp.js"></script>
 <script>
 (function(){
   var SAMPLE = {
@@ -514,6 +516,13 @@
     db.collection('alerts').doc(id).get().then(function(doc){
       if (!doc.exists) { showNotFound(); return; }
       render(doc.data());
+      // XP is a silent side effect of opening a real alert — never blocks or
+      // delays anything above, and a signed-out visitor just earns nothing.
+      if (window.ZelosXP) {
+        ZelosXP.onChange(function(user){
+          if (user) ZelosXP.award('alert-open', id);
+        });
+      }
     }).catch(function(){ showNotFound(); });
   } catch (e) {
     showNotFound();

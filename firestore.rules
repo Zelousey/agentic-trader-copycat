@@ -15,6 +15,12 @@ rules_version = '2';
 //   - everything about a specific person (profile, watchlist, xp, owned skills) is
 //     readable and writable only by that signed-in person.
 //   - the skills catalog (what's for sale) is public read, admin-only write.
+//
+// Known trade-off: XP/streaks are awarded client-side (zelos-xp.js), not by a
+// server function, so a signed-in person could technically edit their own xp
+// field via devtools if they really wanted to. There's no money or real
+// account access riding on it, so this is an accepted limitation, not an
+// oversight — revisit only if XP ever gates something that matters.
 
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -38,9 +44,11 @@ service cloud.firestore {
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
 
+      // XP/streak event ledger — also doubles as the dedup record that stops the
+      // same alert (or the same day's check-in/arcade play) from paying out twice.
+      // Written by zelos-xp.js client-side, only ever to your own subcollection.
       match /activity/{activityId} {
-        allow read: if request.auth != null && request.auth.uid == userId;
-        allow write: if false; // system-generated (xp/streak events), not user-editable
+        allow read, write: if request.auth != null && request.auth.uid == userId;
       }
     }
   }

@@ -102,6 +102,12 @@
     border:1px solid var(--line); background:var(--paper); color:var(--ink);
   }
 
+  .progress-stats{ display:flex; gap:24px; }
+  .stat{ display:flex; flex-direction:column; gap:2px; }
+  .stat .num{ font-family:var(--mono); font-weight:700; font-size:1.6rem; color:var(--accent); }
+  .stat .lbl{ font-size:0.76rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.04em; }
+  .progress-note{ font-size:0.78rem; color:var(--muted); margin-top:10px; }
+
   .skill-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 0; border-bottom:1px solid var(--line); }
   .skill-row:last-child{ border-bottom:none; }
   .skill-name{ font-weight:600; font-size:0.92rem; }
@@ -171,6 +177,12 @@
     <div id="alertsList"><div class="empty">Loading…</div></div>
   </div>
 
+  <!-- Progress (XP/streak) -->
+  <div class="card" id="progressCard" hidden>
+    <div class="card-head"><h2>Your progress</h2></div>
+    <div id="progressBlock"></div>
+  </div>
+
   <!-- Watchlist -->
   <div class="card">
     <div class="card-head"><h2>Stocks you're watching</h2></div>
@@ -198,6 +210,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
+<script src="zelos-xp.js"></script>
 <script>
 (function(){
   var SKILLS = {
@@ -337,6 +350,18 @@
     });
   }
 
+  function renderProgress(user, data){
+    document.getElementById('progressCard').hidden = false;
+    var xp = data.xp || 0;
+    var streak = data.streakDays || 0;
+    document.getElementById('progressBlock').innerHTML =
+      '<div class="progress-stats">' +
+        '<div class="stat"><span class="num">' + xp + '</span><span class="lbl">XP</span></div>' +
+        '<div class="stat"><span class="num">' + streak + '</span><span class="lbl">Day streak</span></div>' +
+      '</div>' +
+      '<div class="progress-note">Streaks track opening at least one alert each day. XP also comes from checking in and playing Arcade games — small amounts, never required.</div>';
+  }
+
   function renderWatchlist(user, data){
     var list = data.watchlist || [];
     var html = '';
@@ -390,13 +415,17 @@
     ensureUserDoc(user).then(function(){
       userDocRef(user.uid).onSnapshot(function(doc){
         var data = doc.data() || {};
+        renderProgress(user, data);
         renderWatchlist(user, data);
         renderSkills(user, data);
       });
+      // Silent, once-per-day XP for showing up — never blocks anything above.
+      if (window.ZelosXP) ZelosXP.award('daily-checkin');
     });
   }
 
   function renderSignedOutBlocks(){
+    document.getElementById('progressCard').hidden = true;
     document.getElementById('watchlistBlock').innerHTML = '<div class="lock"><p>Sign in to save a watchlist.</p></div>';
     document.getElementById('skillsBlock').innerHTML = '<div class="lock"><p>Sign in to see which Zelos skills you own and jump straight to them.</p></div>';
   }
