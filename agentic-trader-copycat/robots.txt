@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /thank-you.html
+Disallow: /alert.html
+Disallow: /going-to-gumroad.html
+Disallow: /going-to-gumroad-breakout.html
+
+Sitemap: https://agentictrading.info/sitemap.xml
