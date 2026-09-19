@@ -162,6 +162,11 @@
   .overlay h2{ font-size:1.3rem; font-weight:700; }
   .overlay p{ color:var(--muted); font-size:0.9rem; max-width:32ch; }
   .overlay .score-line{ font-family:var(--mono); font-size:0.85rem; color:var(--ink); margin-top:2px; }
+  .overlay .over-reason{
+    margin-top:10px; padding:10px 14px; border-radius:10px;
+    background:var(--risk-soft); color:var(--risk); font-size:0.85rem; max-width:34ch; display:none;
+  }
+  .overlay .over-reason.show{ display:block; }
   .overlay button.start{
     margin-top:6px; font-family:var(--sans); font-weight:700; font-size:0.95rem;
     padding:13px 26px; border-radius:10px; border:none;
@@ -239,6 +244,7 @@
       <div class="eyebrow" id="overEyebrow">Game over</div>
       <h2 id="overTitle">Nice run</h2>
       <div class="score-line" id="overScore">Score: 0 &middot; Best: 0</div>
+      <div class="over-reason" id="overReason"></div>
       <button type="button" class="start" id="restartBtn">Play again</button>
       <a class="cta" href="../index.html#how">Zelos does this for real, every session &rarr;</a>
     </div>
@@ -305,11 +311,12 @@
   var overOverlay = document.getElementById('overOverlay');
   var overTitle = document.getElementById('overTitle');
   var overScore = document.getElementById('overScore');
+  var overReason = document.getElementById('overReason');
   var startBtn = document.getElementById('startBtn');
   var restartBtn = document.getElementById('restartBtn');
 
   var score = 0, best = 0, roundTime = 3200, minTime = 1100, timerRAF = null, roundStart = 0, current = null, playing = false, answered = false;
-  var roundKind = 'trend', currentShape = null;
+  var roundKind = 'trend', currentShape = null, lastMissReason = '';
 
   function getBest(){
     try { return parseInt(localStorage.getItem(STORAGE_KEY), 10) || 0; } catch(e){ return 0; }
@@ -487,6 +494,7 @@
       feedback.className = 'feedback show wrong';
       var missed = (choice === null);
       feedback.innerHTML = (missed ? "Too slow &mdash; " : "Not quite &mdash; ") + current.name;
+      lastMissReason = feedback.innerHTML;
       endGame();
     }
   }
@@ -509,6 +517,7 @@
       feedback.className = 'feedback show wrong';
       var missed = (key === null);
       feedback.innerHTML = (missed ? "Too slow &mdash; that was a " : "Not quite &mdash; that was a ") + '<b>' + targetPattern.name + '</b>: ' + targetPattern.blurb;
+      lastMissReason = feedback.innerHTML;
       endGame();
     }
   }
@@ -523,8 +532,15 @@
     setTimeout(function(){
       overTitle.textContent = (score >= 8) ? "Sharp eye" : (score >= 3 ? "Nice run" : "Game over");
       overScore.textContent = "Score: " + score + " · Best: " + best;
+      if (lastMissReason){
+        overReason.innerHTML = lastMissReason;
+        overReason.className = 'over-reason show';
+      } else {
+        overReason.className = 'over-reason';
+        overReason.innerHTML = '';
+      }
       overOverlay.hidden = false;
-    }, 700);
+    }, 1300);
   }
 
   function startGame(){
@@ -532,6 +548,9 @@
     roundTime = 3200;
     scoreVal.textContent = 0;
     playing = true;
+    lastMissReason = '';
+    overReason.className = 'over-reason';
+    overReason.innerHTML = '';
     startOverlay.hidden = true;
     overOverlay.hidden = true;
     newRound();

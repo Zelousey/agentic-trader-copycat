@@ -22,19 +22,19 @@
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-title" content="Zelos">
 <meta name="theme-color" content="#0f1310">
-<meta name="description" content="Zelos is a catalog of rule-based trading agents — each one a Claude skill that watches your own Robinhood account and only speaks up when a setup earns it. Nothing trades without your Accept.">
+<meta name="description" content="Zelos is a catalog of rule-based trade-alert pages — published research, general information, the same for every subscriber. No account, no connection, nothing trades.">
 <link rel="canonical" href="https://agentictrading.info/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Zelos">
 <meta property="og:title" content="Zelos — Agentic Trading Bots">
-<meta property="og:description" content="A catalog of rule-based trading agents — each one a Claude skill that watches your own Robinhood account and only speaks up when a setup earns it. Nothing trades without your Accept.">
+<meta property="og:description" content="A catalog of rule-based trade-alert pages — published research, general information, the same for every subscriber. No account, no connection, nothing trades.">
 <meta property="og:url" content="https://agentictrading.info/">
 <meta property="og:image" content="https://agentictrading.info/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Zelos — Agentic Trading Bots">
-<meta name="twitter:description" content="A catalog of rule-based trading agents — each one a Claude skill that watches your own Robinhood account and only speaks up when a setup earns it. Nothing trades without your Accept.">
+<meta name="twitter:description" content="A catalog of rule-based trade-alert pages — published research, general information, the same for every subscriber. No account, no connection, nothing trades.">
 <meta name="twitter:image" content="https://agentictrading.info/og-image.png">
 <style>
   :root{ color-scheme: light dark; }
@@ -410,7 +410,7 @@
       "name": "Zelos Swing Trader",
       "url": "https://agentictrading.info/swing-trader.html",
       "image": "https://agentictrading.info/og-image.png",
-      "description": "Swing Trader watches your account for one specific pattern — a healthy stock pausing after a run — and only alerts you when a setup earns it. Nothing trades without your Accept.",
+      "description": "Swing Trader publishes one alert a day for one specific pattern — a healthy stock pausing after a run. Rule-based, general information, the same for every subscriber.",
       "applicationCategory": "FinanceApplication",
       "operatingSystem": "Any",
       "offers": {
@@ -427,7 +427,7 @@
       "name": "Zelos Breakout Rider",
       "url": "https://agentictrading.info/breakout-rider.html",
       "image": "https://agentictrading.info/og-image.png",
-      "description": "Breakout Rider watches your account for one specific pattern — a stock clearing resistance and actually holding above it, not just spiking through. Nothing trades without your Accept.",
+      "description": "Breakout Rider publishes one alert a day for one specific pattern — a stock clearing resistance and actually holding above it, not just spiking through. Rule-based, general information, the same for every subscriber.",
       "applicationCategory": "FinanceApplication",
       "operatingSystem": "Any",
       "offers": {
@@ -465,10 +465,10 @@
   </nav>
 
   <section class="hero">
-    <div class="eyebrow">Agentic trading &middot; rule-based, not autopilot</div>
-    <h1>Found by <em>Zelos.</em> Earned by you.</h1>
-    <p class="lede">Zelos is a small catalog of rule-based trading agents. Each one is its own Claude skill that does the research for you &mdash; screening, scoring, and sizing, every time the market's open &mdash; and only speaks up when a setup earns it. You still get the final say: nothing trades without your Accept.</p>
-    <div class="cta-note">Every agent here runs on your own account, under your own credentials &mdash; not ours.</div>
+    <div class="eyebrow">Agentic trading &middot; rule-based alerts</div>
+    <h1>Zelos finds the setup. <em>You</em> take it from here.</h1>
+    <p class="lede">Zelos is a small catalog of rule-based trading alerts. Each one is its own Claude skill that scans the market on a schedule &mdash; screening and scoring setups against a fixed checklist &mdash; and publishes what it finds. Every subscriber sees the exact same alert, at the exact same time.</p>
+    <div class="cta-note">General alerts, not personalized advice &mdash; nothing here is tied to your account. You decide if, how, and where to act.</div>
   </section>
 
   <section style="padding-block:0 64px;">
@@ -482,8 +482,7 @@
         </div>
         <div>
           <h2>Swing Trader</h2>
-          <p class="bot-desc">Pullbacks in a healthy uptrend &mdash; enters only when selling pressure looks like it's fading and risk/reward earns it.</p>
-          <div class="bot-addon"><span class="dot"></span>+ Options mode &middot; coming soon</div>
+          <p class="bot-desc">Pullbacks in a healthy uptrend &mdash; alerts only when selling pressure looks like it's fading and risk/reward earns it.</p>
         </div>
         <svg viewBox="0 0 260 64" role="img" aria-label="Candlestick chart rallying, pulling back into support, then breaking out to a new high">
           <line x1="17.3" y1="43" x2="17.3" y2="55" stroke="var(--accent)" stroke-width="1.4"/>
@@ -510,9 +509,9 @@
           <rect x="235.95" y="6" width="13.5" height="5" fill="var(--accent)"/>
           <circle cx="130.0" cy="37.5" r="3" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/>
         </svg>
-        <div class="bot-backtest">Live on a real Robinhood account &middot; not a backtest, not a demo</div>
+        <div class="bot-backtest">Live alert feed &middot; not a backtest, not a demo</div>
         <div class="bot-card-bottom">
-          <a href="swing-trader.html" class="bot-cta" id="viewSwingTrader">View strategy &rarr;</a>
+          <a href="swing-trader.html" class="bot-cta" id="viewSwingTrader">See today's alert &rarr;</a>
         </div>
       </div>
 
@@ -524,8 +523,7 @@
         </div>
         <div>
           <h2>Breakout Rider</h2>
-          <p class="bot-desc">Waits for a stock to clear resistance and hold above it &mdash; not just spike &mdash; before it ever gets interested.</p>
-          <div class="bot-addon"><span class="dot"></span>+ Options mode &middot; coming soon</div>
+          <p class="bot-desc">Waits for a stock to clear resistance and hold above it &mdash; not just spike &mdash; before it ever gets on the list.</p>
         </div>
         <svg viewBox="0 0 260 64" role="img" aria-label="Candlestick chart coiling in a tight base, then an explosive breakout that holds and keeps climbing">
           <line x1="4" y1="45" x2="256" y2="45" stroke="var(--muted)" stroke-width="1" stroke-dasharray="3 3"/>
@@ -555,14 +553,8 @@
         </svg>
         <div class="bot-backtest">New from Zelos &middot; same rules engine as Swing Trader &middot; no live track record yet</div>
         <div class="bot-card-bottom">
-          <a href="breakout-rider.html" class="bot-cta" id="viewBreakoutRider">View strategy &rarr;</a>
+          <a href="breakout-rider.html" class="bot-cta" id="viewBreakoutRider">See today's alert &rarr;</a>
         </div>
-      </div>
-
-      <!-- Options mode — cross-strategy alert, not a full card -->
-      <div class="options-banner">
-        <span class="options-banner-tag">Coming soon</span>
-        <span><strong>Options mode</strong> for Swing Trader and Breakout Rider &mdash; the same signals you already trust, traded as calls &amp; puts instead of shares.</span>
       </div>
 
       <!-- Earnings Drift — coming soon -->
@@ -781,15 +773,15 @@
   <section>
     <div class="eyebrow">What's next</div>
     <h2 style="font-size:1.7rem; margin-top:8px;">Built for more than this, if the licensing lines up.</h2>
-    <p style="margin-top:12px; color:var(--muted); max-width:56ch;">What you see today is deliberately narrow on purpose: rule-based strategies, the same rules for every subscriber, and a specific Accept from you before anything trades. That's what lets Zelos run as a straightforward, rules-based signal service right now. It's the foundation, not the ceiling.</p>
+    <p style="margin-top:12px; color:var(--muted); max-width:56ch;">What you see today is deliberately narrow on purpose: rule-based strategies, the same published alert for every subscriber, and no account connection of any kind. That's what lets Zelos run as a straightforward, publisher-style signal service right now. It's the foundation, not the ceiling.</p>
     <div class="roadmap-list">
       <div class="roadmap-item">
         <div class="lock">&#128274;</div>
-        <p><b>Fully automatic execution.</b> A qualifying setup gets placed the moment it clears, without needing your Accept on each one.</p>
+        <p><b>Optional account-connected execution.</b> Linking your own brokerage account so a qualifying setup can be reviewed and placed with your approval, instead of only published as general information.</p>
       </div>
       <div class="roadmap-item">
         <div class="lock">&#128274;</div>
-        <p><b>Sizing based on your full picture, not just a formula.</b> Position sizing that accounts for your broader goals and risk tolerance, not a flat share of your balance.</p>
+        <p><b>Sizing based on your full picture, not just a formula.</b> Position sizing that accounts for your broader goals and risk tolerance, not a generic rule of thumb everyone gets the same.</p>
       </div>
       <div class="roadmap-item">
         <div class="lock">&#128274;</div>
@@ -800,13 +792,13 @@
         <p><b>An actual advisory relationship.</b> The accountability, disclosure, and fiduciary duty that come with being a licensed adviser &mdash; not just a signal in your pocket.</p>
       </div>
     </div>
-    <div class="roadmap-note">None of this is available today, and it won't be until it's actually done properly &mdash; not before. If Zelos becomes a registered investment adviser, this is the direction it's headed. Until then, every trade still needs your Accept.</div>
+    <div class="roadmap-note">None of this is available today, and it won't be until it's actually done properly &mdash; not before. If Zelos becomes a registered investment adviser, this is the direction it's headed. Until then, every alert is general information &mdash; you decide what, if anything, to do with it.</div>
   </section>
 
   <section style="padding-block:0 24px;">
     <div class="eyebrow">How this works</div>
-    <p style="margin-top:10px; color:var(--muted); font-size:0.85rem; max-width:62ch;">Every Zelos agent is trading software you install and run yourself, as a Claude skill connected to your own brokerage account using your own credentials &mdash; we never store your account information, positions, or trade history on our own servers. Every subscriber to a given agent runs the same rule-based strategy; trade sizing is calculated automatically from your own account balance, nothing more.</p>
-    <p style="margin-top:8px; color:var(--muted); font-size:0.85rem; max-width:62ch;">No agent here is personalized investment advice, and none of them are a registered investment adviser. Trading involves risk, including loss of principal. Past performance of any strategy does not guarantee future results. "Coming soon" agents are not available for purchase yet and no launch date is promised.</p>
+    <p style="margin-top:10px; color:var(--muted); font-size:0.85rem; max-width:62ch;">Each Zelos strategy is its own Claude skill that scans the market on a fixed schedule, scores what it finds against a published checklist, and posts the result as a public alert &mdash; the same setup, the same entry/stop/target, shown to every subscriber at the same time. Zelos never connects to your brokerage account, never sees your balance or positions, and never places a trade. If a setup interests you, you look it up and trade it yourself, wherever you already have an account.</p>
+    <p style="margin-top:8px; color:var(--muted); font-size:0.85rem; max-width:62ch;">No alert here is personalized investment advice, and Zelos is not a registered investment adviser. Trading involves risk, including loss of principal. Past performance of any strategy does not guarantee future results. "Coming soon" alerts are not available for subscription yet and no launch date is promised.</p>
   </section>
 
   <footer>
