@@ -729,10 +729,13 @@
   if (ready) {
     auth.onAuthStateChanged(function(user){
       if (user && !user.isAnonymous) {
-        // Home is the entry point for signed-out/new visitors; a real account
-        // belongs on the Dashboard, which is now the primary signed-in experience.
-        location.replace('dashboard.html');
-        return;
+        // Signing in sends you straight to the Dashboard (see goToDashboardAfterAuth
+        // below) - but once you're signed in, Home stays a normal page you can browse
+        // any time, not a place that bounces you away.
+        renderSignedIn(user);
+        ensureUserDoc(user).then(function(){ return claimPendingOwnership(user); }).then(function(){
+          if (window.ZelosXP) ZelosXP.award('daily-checkin');
+        });
       } else {
         renderSignedOut();
         if (user && window.ZelosXP) ZelosXP.award('daily-checkin');
