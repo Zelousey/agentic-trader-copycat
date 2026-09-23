@@ -126,32 +126,13 @@
   /* ---- single-screen command-center grid ---- */
   .dash-grid{
     display:grid; grid-template-columns:300px 1fr 320px; gap:18px;
-    align-items:stretch; margin-top:22px;
+    align-items:start; margin-top:22px;
   }
   .dash-col{ display:flex; flex-direction:column; min-width:0; }
   .dash-col .card{ margin-top:0; }
   .dash-col .card + .card{ margin-top:18px; }
-  /* the center column only ever holds the one visualization card, so on a
-     tall left/right column it used to end early and leave a bare gap of
-     page background above the bottom row. Stretching the grid row (above)
-     makes this column as tall as its neighbors; growing the card — and the
-     globe/chart frame inside it — into that height means the globe itself
-     fills the space instead of leaving a gap under it. */
-  .dash-col:nth-child(2) .dash-viz{ flex:1; display:flex; flex-direction:column; margin-top:0; }
   @media (max-width:1200px){ .dash-grid{ grid-template-columns:1fr 1fr; } .dash-col:nth-child(3){ grid-column:1 / -1; } }
-  @media (max-width:820px){
-    .dash-grid{ grid-template-columns:1fr; }
-    .dash-col:nth-child(3){ grid-column:auto; }
-    .dash-col:nth-child(2) .dash-viz{ flex:none; }
-  }
-
-  /* same three column widths as .dash-grid above, so the bottom row's cards
-     line up edge-to-edge with the columns they sit under instead of being
-     evenly split thirds against an uneven grid. */
-  .dash-bottom-grid{ display:grid; grid-template-columns:300px 1fr 320px; gap:18px; margin-top:18px; }
-  .dash-bottom-grid .card{ margin-top:0; }
-  @media (max-width:1200px){ .dash-bottom-grid{ grid-template-columns:1fr 1fr; } .dash-bottom-grid > *:nth-child(3){ grid-column:1 / -1; } }
-  @media (max-width:820px){ .dash-bottom-grid{ grid-template-columns:1fr; } .dash-bottom-grid > *:nth-child(3){ grid-column:auto; } }
+  @media (max-width:820px){ .dash-grid{ grid-template-columns:1fr; } .dash-col:nth-child(3){ grid-column:auto; } }
 
   .intro-copy{ max-width:64ch; }
 
@@ -212,23 +193,14 @@
   .viz-toggle-btn.is-active{ background:var(--accent-soft); color:var(--accent); }
   .viz-toggle-btn:hover:not(.is-active){ color:var(--ink); }
 
-  /* the panes and frame grow to fill the card, which itself grows to fill the
-     stretched column (see .dash-col:nth-child(2) above) — so the globe/chart
-     stretches down to meet the bottom row instead of leaving a gap under it.
-     min-height keeps it from ever collapsing too short at low viewport heights. */
-  /* the shared .globe-frame rule (zelos-theme.css) sets margin-inline:auto to
-     center+cap it at 640px on pages with a wide column. In a flex column,
-     auto cross-axis margins suppress stretch and shrink the item toward its
-     (near-empty) content width instead — the frame was collapsing to a
-     couple of pixels wide. Zeroing the margin here restores full-width. */
-  #vizGlobePane, #vizChartPane{ display:flex; flex-direction:column; flex:1; min-height:0; }
-  .dash-viz .globe-frame{ flex:1; min-height:440px; max-width:100%; width:100%; margin-inline:0; }
+  /* smaller than the dedicated Market 3D page — this is one widget among many here */
+  .dash-viz .globe-frame{ height:440px; max-width:100%; }
   .dash-viz .chart-frame{
     border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden;
-    background:var(--surface); flex:1; min-height:440px; max-width:100%; width:100%; margin-inline:0;
+    background:var(--surface); height:440px; max-width:100%;
   }
   .dash-viz .chart-frame .tradingview-widget-container{ height:100%; width:100%; }
-  @media (max-width:760px){ .dash-viz .globe-frame, .dash-viz .chart-frame{ flex:none; height:360px; min-height:360px; } }
+  @media (max-width:760px){ .dash-viz .globe-frame, .dash-viz .chart-frame{ height:360px; } }
 
   /* ---- Live Signal Pulse ---- */
   .pulse-table{ display:flex; flex-direction:column; }
@@ -488,6 +460,29 @@
             </div>
           </div>
         </div>
+
+        <div class="card" id="progressCard" hidden>
+          <div class="card-head"><h2>Your progress</h2></div>
+          <div id="progressBlock"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h2>Watching</h2></div>
+          <div id="watchlistBlock">
+            <div class="lock">
+              <p>Sign in to save a watchlist.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h2>Your skills</h2><a href="arsenal.html">Full catalog &rarr;</a></div>
+          <div id="skillsBlock">
+            <div class="lock">
+              <p>Sign in to see which Zelos skills you own and jump straight to them.</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Right column: trending, live pulse, active calls -->
@@ -516,30 +511,6 @@
       </div>
     </div>
 
-    <div class="dash-bottom-grid">
-      <div class="card" id="progressCard" hidden>
-        <div class="card-head"><h2>Your progress</h2></div>
-        <div id="progressBlock"></div>
-      </div>
-
-      <div class="card">
-        <div class="card-head"><h2>Watching</h2></div>
-        <div id="watchlistBlock">
-          <div class="lock">
-            <p>Sign in to save a watchlist.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-head"><h2>Your skills</h2><a href="arsenal.html">Full catalog &rarr;</a></div>
-        <div id="skillsBlock">
-          <div class="lock">
-            <p>Sign in to see which Zelos skills you own and jump straight to them.</p>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <p class="fine" style="margin-top:22px;">Rule-based scans only — general information, not personalized advice. Not a registered investment adviser. Trading involves risk, including loss of principal. Active call tracking shows published entry/stop/target levels only; it is not a live profit/loss feed and outcomes are not simulated or projected.</p>
   </div>
