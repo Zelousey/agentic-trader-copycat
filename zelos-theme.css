@@ -11,6 +11,18 @@
  * pass if it turns out people want it.
  */
 
+/* Cross-page navigation fade. This is a genuine multi-page site (every nav
+   is a full browser navigation, not client-side routing), which is what
+   made switching pages feel like a hard "glitch" — a blank flash, then
+   everything (including the 3D globe) reinitializing from scratch. The
+   View Transitions API gives same-origin navigations an automatic
+   cross-fade with zero JS: supporting browsers (Chrome/Edge) get a smooth
+   transition, everything else just falls back to today's plain navigation
+   — no regression either way. */
+@view-transition {
+  navigation: auto;
+}
+
 :root{
   color-scheme: dark;
 
@@ -296,25 +308,39 @@ body.zt-body{
 .hero .cta-note{ margin-top:16px; font-family:var(--mono); font-size:0.76rem; color:var(--muted); max-width:52ch; }
 .hero-ctas{ display:flex; gap:12px; margin-top:26px; flex-wrap:wrap; }
 
-/* drifting dot-grid backdrop, GPU-cheap (background-position only) */
-.hero::before{
-  content:""; position:absolute; inset:-10% -10%; z-index:0; pointer-events:none;
+/* drifting dot-grid backdrop, GPU-cheap (background-position only).
+   Fixed to the viewport on <body> (not scoped to .hero) so it covers the
+   full height of every page, long/scrolled ones included, not just the
+   hero banner at the top. z-index:-1 keeps it behind all normal content;
+   body's own background (painted at the canvas level) sits beneath it. */
+body.zt-body::before{
+  content:""; position:fixed; inset:-10% -10%; z-index:-1; pointer-events:none;
   background-image:radial-gradient(rgba(248,239,221,0.10) 1px, transparent 1px);
   background-size:26px 26px;
   animation:zt-grid-drift 50s linear infinite;
   opacity:0.6;
 }
-.hero{ --mood-tint: transparent; }
-.hero[data-mood="bull"]{ --mood-tint: rgba(62,203,124,0.16); }
-.hero[data-mood="bear"]{ --mood-tint: rgba(224,72,63,0.16); }
-.hero::after{
-  content:""; position:absolute; inset:0; z-index:2; pointer-events:none;
-  /* soft red/green "shadows" pooling in the corners of the brown — a whisper
-     of color, not a wash, so the page still reads as solid light brown */
-  background:radial-gradient(ellipse 38% 42% at 96% -6%, rgba(224,72,63,0.16), transparent 68%),
-             radial-gradient(ellipse 40% 44% at -4% 104%, rgba(62,203,124,0.14), transparent 68%),
-             radial-gradient(ellipse 70% 60% at 50% 50%, var(--mood-tint), transparent 70%);
-  transition:background 0.6s ease;
+/* Market-mood hook: zelos-mood.js sets data-mood on <body> from the latest
+   alert's regime (bullish/bearish/neutral). Neutral/unknown just leaves
+   --mood-tint transparent, i.e. the default ambient glow below with no tint. */
+body.zt-body{ --mood-tint: transparent; }
+body.zt-body[data-mood="bull"]{ --mood-tint: rgba(62,203,124,0.10); }
+body.zt-body[data-mood="bear"]{ --mood-tint: rgba(224,72,63,0.10); }
+body.zt-body::after{
+  content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+  /* fewer, larger, lower-opacity pools than before, and mix-blend-mode:screen
+     so they read as light glowing through the dark surface rather than a
+     flat color wash — calmer and closer to "atmosphere" than "banner glow" */
+  background:radial-gradient(ellipse 60% 55% at 100% 0%, rgba(224,72,63,0.10), transparent 72%),
+             radial-gradient(ellipse 60% 55% at 0% 100%, rgba(62,203,124,0.09), transparent 72%),
+             radial-gradient(ellipse 90% 80% at 50% 50%, var(--mood-tint), transparent 74%);
+  mix-blend-mode:screen;
+  animation:zt-glow-breathe 28s ease-in-out infinite;
+  transition:background 1.2s ease;
+}
+@keyframes zt-glow-breathe{ 0%,100%{ opacity:0.7; } 50%{ opacity:1; } }
+@media (prefers-reduced-motion: reduce){
+  body.zt-body::after{ animation:none; opacity:0.85; }
 }
 @keyframes zt-grid-drift{ from{ background-position:0 0; } to{ background-position:520px 260px; } }
 
@@ -438,7 +464,7 @@ body.zt-body{
 @keyframes zt-float{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-7px); } }
 
 @media (prefers-reduced-motion: reduce){
-  .hero::before, .zmark-candle, .zmark-pulse-ring, .zmark-terminal-track, .hero-rain-track, .zmark-chip{
+  body.zt-body::before, .zmark-candle, .zmark-pulse-ring, .zmark-terminal-track, .hero-rain-track, .zmark-chip{
     animation:none !important;
   }
   .zmark-candle{ opacity:1; }
@@ -602,6 +628,19 @@ body.zt-body{
    when off-screen or when the tab is hidden (see the mounting script on
    each page); this file only owns the surrounding chrome. */
 .globe-wrap{ position:relative; width:100%; height:100%; }
+/* thin starfield behind the globe canvas — two dot-grid layers at different
+   scales/opacities so it reads as scattered points rather than a regular
+   grid, sitting behind the canvas (which paints on top as a later, plain
+   child) purely for atmosphere/depth */
+.globe-wrap::before{
+  content:""; position:absolute; inset:-8%; z-index:0; pointer-events:none; border-radius:50%;
+  background-image:
+    radial-gradient(rgba(248,239,221,0.55) 0.6px, transparent 0.6px),
+    radial-gradient(rgba(248,239,221,0.35) 0.9px, transparent 0.9px);
+  background-size:34px 34px, 61px 61px;
+  background-position:0 0, 17px 29px;
+  opacity:0.4;
+}
 .globe-canvas-host{ width:100%; height:100%; cursor:grab; }
 .globe-canvas-host:active{ cursor:grabbing; }
 .globe-loading{
@@ -625,6 +664,13 @@ body.zt-body{
 .globe-badge.up .pct{ color:var(--bull); }
 .globe-badge.dn{ border-color:var(--danger); }
 .globe-badge.dn .pct{ color:var(--danger); }
+
+.globe-tooltip{
+  font-family:var(--mono); font-size:0.72rem; font-weight:500; color:var(--ink);
+  background:var(--surface); border:1px solid var(--border); border-radius:3px;
+  padding:5px 9px; box-shadow:0 10px 22px rgba(0,0,0,0.5); pointer-events:none;
+}
+.globe-tooltip b{ font-weight:700; }
 
 .globe-legend{ display:flex; flex-wrap:wrap; gap:16px; align-items:center; justify-content:center; margin-top:16px; font-family:var(--mono); font-size:0.72rem; color:var(--muted); }
 .globe-legend span{ display:inline-flex; align-items:center; gap:6px; }

@@ -147,9 +147,10 @@
           <a href="daily-market.html">Daily Market<small>Today's regime &amp; tape</small></a>
           <a href="alert-history.html">Alert History<small>Every alert, archived</small></a>
           <a href="leaderboard.html">Leaderboard<small>XP &amp; streaks</small></a>
-          <a href="arcade.html">Arcade<small>Free games, small XP</small></a>
         </div>
       </div>
+
+      <a class="nav-link" href="arcade.html">Arcade</a>
       <a class="nav-link" href="alert-history.html">Alerts</a>
       <a class="nav-link" href="ai-knowledge-catalog.html">Knowledge</a>
       <a class="nav-link" href="index.html#why-zelos">About</a>
@@ -359,6 +360,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
+<script src="zelos-mood.js"></script>
 <script>
 (function(){
   var SKILL_IDS = ['swing-trader', 'breakout-rider', 'options-scanner'];
@@ -520,7 +522,7 @@
 
   if (ready) {
     auth.onAuthStateChanged(function(user){
-      if (!user) {
+      if (!user || user.isAnonymous) {
         renderSignedOut();
         document.getElementById('markOwnedBlock').hidden = true;
         setProgress(0, SKILL_IDS.length, 'Sign in to track which skills you\'ve unlocked.');

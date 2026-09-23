@@ -98,6 +98,25 @@
     }
     return d + 'Z';
   }
+  // plain average-of-points centroid of a country's largest ring — not a
+  // true geographic centroid, but plenty accurate to point the camera at
+  // for a click-to-focus interaction (doesn't need to be exact).
+  function polygonCentroid(feature) {
+    var geom = feature.geometry;
+    if (!geom) return null;
+    var polys = geom.type === 'Polygon' ? [geom.coordinates]
+      : geom.type === 'MultiPolygon' ? geom.coordinates : [];
+    var best = null, bestLen = 0;
+    for (var i = 0; i < polys.length; i++) {
+      var ring = polys[i][0];
+      if (ring && ring.length > bestLen) { best = ring; bestLen = ring.length; }
+    }
+    if (!best || !best.length) return null;
+    var sx = 0, sy = 0;
+    for (var j = 0; j < best.length; j++) { sx += best[j][0]; sy += best[j][1]; }
+    return [sx / best.length, sy / best.length]; // [lng, lat]
+  }
+
   function featureToPath(feature, w, h) {
     var geom = feature.geometry;
     if (!geom) return '';
@@ -134,6 +153,23 @@
     el.appendChild(svg);
   }
 
+  // Swap the loading placeholder for the finished globe with a brief
+  // fade-out/fade-in instead of an abrupt pop — that hard swap (visible on
+  // every navigation, since this is a full page reload each time, not an
+  // SPA) is what reads as a "glitch." Cheap and works everywhere; no
+  // dependency on the View Transitions API below, which not every browser
+  // supports yet.
+  function fadeOut(el, cb) {
+    el.style.transition = 'opacity 0.28s ease';
+    el.style.opacity = '0';
+    setTimeout(cb, 280);
+  }
+  function fadeIn(el) {
+    void el.offsetWidth; // force a reflow so the browser registers opacity:0 first
+    el.style.transition = 'opacity 0.45s ease';
+    el.style.opacity = '1';
+  }
+
   function mount(opts) {
     var el = opts.el;
     if (!el || typeof global.Globe !== 'function') {
@@ -149,6 +185,9 @@
     fetch(COUNTRIES_URL)
       .then(function (r) { return r.json(); })
       .then(function (world) {
+        fadeOut(el, function () { mountGlobe(world); });
+
+        function mountGlobe(world) {
         if (loading.parentNode) loading.parentNode.removeChild(loading);
 
         var accent = cssVar('--accent', '#4a86ff');
@@ -171,7 +210,22 @@
           .polygonSideColor(function () { return 'rgba(0,0,0,0.18)'; })
           .polygonStrokeColor(function () { return 'rgba(10,7,4,0.45)'; })
           .polygonAltitude(0.012)
-          .polygonsTransitionDuration(0);
+          .polygonsTransitionDuration(0)
+          // hover tooltip on each country — previously only the flat 2D map had this
+          .polygonLabel(function (f) {
+            var name = (f.properties && (f.properties.NAME || f.properties.ADMIN)) || 'Unknown';
+            var pct = pctForCountry(name);
+            var sign = pct >= 0 ? '+' : '';
+            return '<div class="globe-tooltip"><b>' + name + '</b> ' + sign + pct.toFixed(2) + '%</div>';
+          })
+          // click a country to focus the camera on it — small bit of interactivity
+          // beyond drag-to-rotate/scroll-zoom, no dependency on a page that doesn't exist yet
+          .onPolygonClick(function (f) {
+            if (!f || !f.properties) return;
+            var centroid = polygonCentroid(f);
+            if (!centroid) return;
+            g.pointOfView({ lat: centroid[1], lng: centroid[0], altitude: 1.4 }, 700);
+          });
 
         if (opts.badges && opts.badges.length) {
           g.htmlElementsData(opts.badges)
@@ -243,6 +297,9 @@
         if (opts.flatMapEl) renderFlatMap(opts.flatMapEl, world.features);
 
         if (opts.onReady) opts.onReady(g);
+
+        fadeIn(el);
+        }
       })
       .catch(function (err) {
         if (loading.parentNode) loading.parentNode.removeChild(loading);
