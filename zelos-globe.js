@@ -80,6 +80,60 @@
     return r.bottom > 0 && r.top < (window.innerHeight || document.documentElement.clientHeight);
   }
 
+  var SVG_NS = 'http://www.w3.org/2000/svg';
+
+  // simple equirectangular projection (lng/lat straight onto an x/y grid) —
+  // plenty accurate for a small at-a-glance overview map, no map-projection
+  // library needed. Reuses the same GeoJSON the 3D globe already fetched, so
+  // the flat map never costs a second network request and always agrees
+  // exactly with the globe's coloring.
+  function projectPoint(lng, lat, w, h) {
+    return [(lng + 180) / 360 * w, (90 - lat) / 180 * h];
+  }
+  function ringToPath(ring, w, h) {
+    var d = '';
+    for (var i = 0; i < ring.length; i++) {
+      var p = projectPoint(ring[i][0], ring[i][1], w, h);
+      d += (i === 0 ? 'M' : 'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1) + ' ';
+    }
+    return d + 'Z';
+  }
+  function featureToPath(feature, w, h) {
+    var geom = feature.geometry;
+    if (!geom) return '';
+    var polys = geom.type === 'Polygon' ? [geom.coordinates]
+      : geom.type === 'MultiPolygon' ? geom.coordinates : [];
+    var d = '';
+    for (var i = 0; i < polys.length; i++) {
+      for (var j = 0; j < polys[i].length; j++) { d += ringToPath(polys[i][j], w, h) + ' '; }
+    }
+    return d.trim();
+  }
+
+  function renderFlatMap(el, features) {
+    if (!el) return;
+    var w = 400, h = 200;
+    var svg = document.createElementNS(SVG_NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    for (var i = 0; i < features.length; i++) {
+      var f = features[i];
+      var name = (f.properties && (f.properties.NAME || f.properties.ADMIN)) || '';
+      var path = document.createElementNS(SVG_NS, 'path');
+      path.setAttribute('d', featureToPath(f, w, h));
+      path.setAttribute('fill', colorForPct(pctForCountry(name), 0.85));
+      path.setAttribute('stroke', 'rgba(10,7,4,0.55)');
+      path.setAttribute('stroke-width', '0.4');
+      var pct = pctForCountry(name);
+      var titleEl = document.createElementNS(SVG_NS, 'title');
+      titleEl.textContent = name + ' ' + (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%';
+      path.appendChild(titleEl);
+      svg.appendChild(path);
+    }
+    el.innerHTML = '';
+    el.appendChild(svg);
+  }
+
   function mount(opts) {
     var el = opts.el;
     if (!el || typeof global.Globe !== 'function') {
@@ -186,14 +240,17 @@
           else if (isInViewport(el)) g.resumeAnimation();
         });
 
+        if (opts.flatMapEl) renderFlatMap(opts.flatMapEl, world.features);
+
         if (opts.onReady) opts.onReady(g);
       })
       .catch(function (err) {
         if (loading.parentNode) loading.parentNode.removeChild(loading);
         el.innerHTML = '<div class="globe-loading">Live map unavailable right now</div>';
+        if (opts.flatMapEl) opts.flatMapEl.innerHTML = '<div class="globe-loading">Live map unavailable right now</div>';
         if (global.console) console.error('Zelos globe failed to load', err);
       });
   }
 
-  global.ZelosGlobe = { mount: mount, pctForCountry: pctForCountry, colorForPct: colorForPct };
+  global.ZelosGlobe = { mount: mount, pctForCountry: pctForCountry, colorForPct: colorForPct, renderFlatMap: renderFlatMap };
 })(window);

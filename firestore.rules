@@ -51,5 +51,18 @@ service cloud.firestore {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
     }
+
+    // Unclaimed Gumroad purchases, keyed by the lowercased email used at checkout.
+    // Written only by the gumroad_ping Cloud Function (Admin SDK, bypasses these
+    // rules). A signed-in person may read and delete only the doc matching their
+    // own login email - that's how they "claim" it into their own users/ doc on
+    // next sign-in (see claimPendingOwnership() in dashboard.html / my-zelos.html).
+    // Never client-writable: the webhook is the only thing allowed to create one.
+    match /pendingOwnership/{email} {
+      allow read, delete: if request.auth != null
+        && request.auth.token.email != null
+        && request.auth.token.email.lower() == email;
+      allow write: if false;
+    }
   }
 }
