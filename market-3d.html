@@ -36,6 +36,7 @@
 <meta name="twitter:description" content="Global markets on a live, rotating 3D globe.">
 <meta name="twitter:image" content="https://agentictrading.info/og-image.png">
 <link rel="stylesheet" href="zelos-theme.css">
+<script>(function(){try{if(localStorage.getItem('zelosTheme')==='black')document.documentElement.setAttribute('data-theme','black');}catch(e){}})();</script>
 <style>
   :root{ color-scheme: dark; }
   *{ box-sizing:border-box; }
@@ -91,6 +92,7 @@
     </div>
 
     <div style="display:flex; align-items:center; gap:10px;">
+      <button class="theme-toggle" id="themeToggle" type="button" title="Switch background theme"><span class="theme-toggle-track"><i class="sw-brown"></i><i class="sw-black"></i></span><span class="theme-toggle-knob"></span></button>
       <button class="nav-hamburger" id="navHamburger" type="button" aria-label="Menu" aria-expanded="false">&#9776;</button>
       <div class="nav-auth" id="navAuth"></div>
     </div>
@@ -519,5 +521,6 @@
   }, { passive: true });
 })();
 </script>
+<script src="zelos-theme-toggle.js"></script>
 </body>
 </html>

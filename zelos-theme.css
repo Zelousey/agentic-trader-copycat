@@ -23,6 +23,7 @@
   --surface-hover:#372a1a;
   --border:#5c4429;
   --border-soft:#3a2b1a;
+  --nav-bg:rgba(28,19,10,0.88);
 
   /* -- text (cream) -- */
   --ink:#f8efdd;
@@ -80,6 +81,27 @@
   --paper:var(--bg);
 }
 
+/* ---- alternate "black" background theme, toggled via [data-theme="black"]
+   on <html>. Only the base surfaces/text shift — accent blue, violet, gold,
+   bull-green and danger-red stay identical in both themes so charts, chips
+   and alerts always read the same way regardless of which background the
+   viewer picked. ---- */
+:root[data-theme="black"]{
+  --bg:#0c0d10;
+  --bg-soft:#101216;
+  --surface:#15171c;
+  --surface-2:#1a1d23;
+  --surface-hover:#22252c;
+  --border:#2b2e35;
+  --border-soft:#1d1f24;
+  --nav-bg:rgba(10,11,14,0.88);
+
+  --ink:#f4f5f7;
+  --ink-2:#d6d9de;
+  --muted:#9599a3;
+  --muted-2:#5c6068;
+}
+
 /* ---------------------------------------------------------------- reset */
 .zt *{ box-sizing:border-box; }
 body.zt-body{
@@ -112,7 +134,7 @@ body.zt-body{
 /* ---------------------------------------------------------------- nav */
 .site-nav{
   position:sticky; top:0; z-index:100;
-  background:rgba(28,19,10,0.88);
+  background:var(--nav-bg);
   backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
   border-bottom:1px solid var(--border-soft);
 }
@@ -161,6 +183,29 @@ body.zt-body{
 .nav-drop-panel hr{ border:none; border-top:1px solid var(--border-soft); margin:6px 2px; }
 
 .nav-auth{ display:flex; align-items:center; gap:10px; flex-shrink:0; }
+
+/* -- background theme toggle: a small two-swatch pill, brown vs black.
+   Everything else (accent blue, gold, bull/danger) stays fixed — this only
+   flips the surface tokens above via [data-theme] on <html>. -- */
+.theme-toggle{
+  position:relative; flex-shrink:0; width:52px; height:28px; padding:3px;
+  border-radius:999px; border:1px solid var(--border); background:var(--surface);
+  cursor:pointer; display:inline-flex; align-items:center;
+}
+.theme-toggle:hover{ border-color:var(--muted-2); }
+.theme-toggle-track{
+  position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:space-between;
+  padding:0 3px;
+}
+.theme-toggle-track i{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.theme-toggle-track i.sw-brown{ background:#c98a4b; }
+.theme-toggle-track i.sw-black{ background:#e7e9ee; }
+.theme-toggle-knob{
+  position:absolute; top:2px; left:2px; width:20px; height:20px; border-radius:50%;
+  background:var(--ink); box-shadow:0 2px 6px rgba(0,0,0,0.4);
+  transition:transform 0.18s ease;
+}
+:root[data-theme="black"] .theme-toggle-knob{ transform:translateX(24px); }
 
 /* mobile nav collapse */
 .nav-hamburger{
@@ -299,8 +344,14 @@ body.zt-body{
    no canvas, no JS animation loop) ---- */
 .hero-visual{ position:relative; z-index:3; display:flex; align-items:center; justify-content:center; min-height:420px; min-width:0; }
 .zmark{ position:relative; width:min(600px, 96%); aspect-ratio:3/2.05; }
-.zmark.is-globe{ display:flex; flex-direction:column; width:min(560px, 96%); aspect-ratio:1/1; }
+.zmark.is-globe{ display:flex; flex-direction:column; width:min(560px, 96%); aspect-ratio:1/1; min-height:340px; }
 .zmark.is-globe .globe-wrap{ flex:1; min-height:0; }
+/* aspect-ratio fallback for older browsers that ignore it: without it
+   .globe-wrap has nothing to size against and can collapse toward 0 height,
+   which is what makes the globe render stretched/"cut off". */
+@supports not (aspect-ratio:1/1){
+  .zmark.is-globe{ height:min(560px, 90vw); }
+}
 .zmark-glow{
   position:absolute; inset:2%; border-radius:24px; z-index:0; pointer-events:none;
   background:radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0.4), transparent 72%);

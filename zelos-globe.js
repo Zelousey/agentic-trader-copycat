@@ -98,7 +98,12 @@
         if (loading.parentNode) loading.parentNode.removeChild(loading);
 
         var accent = cssVar('--accent', '#4a86ff');
-        var g = global.Globe()(el)
+        // logarithmicDepthBuffer cuts down the shimmering/"glitchy" seams that
+        // show up between adjacent country polygons on a plain WebGL depth
+        // buffer at this scale (a known globe.gl/three.js artifact, not a
+        // country-data issue) — see the note above on why this is the one
+        // place in the theme that needs WebGL tuning at all.
+        var g = global.Globe({ rendererConfig: { antialias: true, logarithmicDepthBuffer: true } })(el)
           .globeImageUrl(EARTH_TEXTURE)
           .backgroundColor('rgba(0,0,0,0)')
           .showAtmosphere(true)
@@ -111,7 +116,7 @@
           })
           .polygonSideColor(function () { return 'rgba(0,0,0,0.18)'; })
           .polygonStrokeColor(function () { return 'rgba(10,7,4,0.45)'; })
-          .polygonAltitude(0.006)
+          .polygonAltitude(0.012)
           .polygonsTransitionDuration(0);
 
         if (opts.badges && opts.badges.length) {
@@ -148,7 +153,22 @@
           if (w && h) g.width(w).height(h);
         }
         resize();
-        global.addEventListener('resize', debounce(resize, 150));
+        // a plain window-resize listener misses cases where the CONTAINER's
+        // own size changes without the window changing — e.g. a flex/
+        // aspect-ratio layout that hasn't finished settling on first paint,
+        // or fonts/webfonts loading in and reflowing the hero above it. A
+        // ResizeObserver on the element itself catches that directly, which
+        // is what actually fixes a globe that renders stretched/"cut off"
+        // because it sized itself against a 0×0 or transitional box.
+        if ('ResizeObserver' in global) {
+          var ro = new ResizeObserver(debounce(resize, 100));
+          ro.observe(el);
+        } else {
+          global.addEventListener('resize', debounce(resize, 150));
+        }
+        // belt-and-suspenders: re-check shortly after mount in case the very
+        // first resize() ran before layout had settled at all.
+        setTimeout(resize, 300);
 
         // pause the render loop whenever this globe isn't actually visible —
         // this is the main defense against "lagging out the site"

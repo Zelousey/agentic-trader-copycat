@@ -36,6 +36,7 @@
 <meta name="twitter:description" content="Breakout Rider publishes one alert a day for one specific pattern — a stock clearing resistance and actually holding above it, not just spiking through. Rule-based, general information, the same for every subscriber.">
 <meta name="twitter:image" content="https://agentictrading.info/og-image.png">
 <link rel="stylesheet" href="zelos-theme.css">
+<script>(function(){try{if(localStorage.getItem('zelosTheme')==='black')document.documentElement.setAttribute('data-theme','black');}catch(e){}})();</script>
 <style>
   :root{ color-scheme: dark; }
   *{ box-sizing:border-box; }
@@ -179,6 +180,7 @@
     </div>
 
     <div style="display:flex; align-items:center; gap:10px;">
+      <button class="theme-toggle" id="themeToggle" type="button" title="Switch background theme"><span class="theme-toggle-track"><i class="sw-brown"></i><i class="sw-black"></i></span><span class="theme-toggle-knob"></span></button>
       <button class="nav-hamburger" id="navHamburger" type="button" aria-label="Menu" aria-expanded="false">&#9776;</button>
       <div class="nav-auth" id="navAuth"></div>
     </div>
@@ -735,5 +737,6 @@
   });
 })();
 </script>
+<script src="zelos-theme-toggle.js"></script>
 </body>
 </html>
