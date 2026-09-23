@@ -35,7 +35,7 @@
   .applinks{ display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
   .applinks a{
     font-family:var(--mono); font-size:0.78rem; color:var(--ink-2); text-decoration:none;
-    background:var(--surface); border:1px solid var(--border); border-radius:999px; padding:7px 14px;
+    background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:7px 14px;
   }
   .applinks a:hover{ color:var(--ink); border-color:var(--muted-2); }
   .applinks a.is-active{ color:var(--accent); border-color:var(--accent-line); background:var(--accent-soft); }
@@ -50,11 +50,11 @@
   .progress-head h2{ font-size:0.95rem; margin:0; font-family:var(--mono); letter-spacing:0.02em; }
   .progress-count{ font-family:var(--mono); font-weight:700; font-size:0.95rem; color:var(--accent); }
   .progress-track{
-    height:10px; border-radius:999px; background:var(--surface-2); border:1px solid var(--border-soft);
+    height:10px; border-radius:3px; background:var(--surface-2); border:1px solid var(--border-soft);
     overflow:hidden; margin-top:12px;
   }
   .progress-fill{
-    height:100%; width:0%; border-radius:999px;
+    height:100%; width:0%; border-radius:3px;
     background:linear-gradient(90deg, var(--accent), var(--bull));
     transition:width .5s ease;
   }
@@ -70,7 +70,7 @@
   .skill-tile.is-locked{ border-style:dashed; }
 
   .skill-icon{
-    width:46px; height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+    width:46px; height:46px; border-radius:3px; display:flex; align-items:center; justify-content:center;
     font-family:var(--mono); font-weight:700; font-size:0.95rem; flex:none;
     background:var(--surface-2); color:var(--muted); border:1px solid var(--border);
   }
@@ -81,7 +81,7 @@
   .skill-ribbon{
     position:absolute; top:16px; right:16px; display:flex; align-items:center; gap:5px;
     font-family:var(--mono); font-size:0.62rem; text-transform:uppercase; letter-spacing:0.05em;
-    padding:4px 9px 4px 7px; border-radius:999px; white-space:nowrap;
+    padding:4px 9px 4px 7px; border-radius:3px; white-space:nowrap;
   }
   .skill-ribbon svg{ width:10px; height:10px; flex:none; }
   .skill-ribbon.unlocked{ background:var(--accent-soft); color:var(--accent); }
@@ -91,7 +91,7 @@
   .skill-name-row h2{ font-size:1.05rem; margin:0; }
   .skill-tag{
     font-family:var(--mono); font-size:0.66rem; letter-spacing:0.04em; text-transform:uppercase;
-    padding:3px 9px; border-radius:999px; background:var(--surface-2); color:var(--muted); border:1px solid var(--border);
+    padding:3px 9px; border-radius:3px; background:var(--surface-2); color:var(--muted); border:1px solid var(--border);
   }
   .skill-desc{ color:var(--muted); font-size:0.88rem; line-height:1.5; margin:0; }
   .skill-bottom{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:auto; flex-wrap:wrap; }
@@ -106,7 +106,7 @@
     border:1px dashed var(--border); border-radius:var(--radius-sm);
   }
   .roadmap-icon{
-    width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center;
+    width:34px; height:34px; border-radius:3px; display:flex; align-items:center; justify-content:center;
     background:var(--surface-2); border:1px solid var(--border); color:var(--muted);
   }
   .roadmap-icon svg{ width:15px; height:15px; }
@@ -114,7 +114,7 @@
   .roadmap-desc{ font-size:0.8rem; color:var(--muted); line-height:1.45; margin:0; }
   .roadmap-tag{
     align-self:flex-start; font-family:var(--mono); font-size:0.62rem; letter-spacing:0.04em; text-transform:uppercase;
-    color:var(--muted); border:1px solid var(--border); padding:3px 8px; border-radius:999px; background:var(--surface);
+    color:var(--muted); border:1px solid var(--border); padding:3px 8px; border-radius:3px; background:var(--surface);
   }
 
   .empty{ color:var(--muted); font-size:0.88rem; padding:6px 0; }

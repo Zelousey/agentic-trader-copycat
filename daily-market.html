@@ -35,7 +35,7 @@
   .applinks{ display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
   .applinks a{
     font-family:var(--mono); font-size:0.78rem; color:var(--ink-2); text-decoration:none;
-    background:var(--surface); border:1px solid var(--border); border-radius:999px; padding:7px 14px;
+    background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:7px 14px;
   }
   .applinks a:hover{ color:var(--ink); border-color:var(--muted-2); }
   .applinks a.is-active{ color:var(--accent); border-color:var(--accent-line); background:var(--accent-soft); }
@@ -47,7 +47,7 @@
 
   .regime-tile{ display:flex; align-items:center; gap:16px; }
   .regime-badge{
-    flex:none; width:64px; height:64px; border-radius:16px;
+    flex:none; width:64px; height:64px; border-radius:3px;
     display:flex; align-items:center; justify-content:center;
     font-family:var(--mono); font-weight:700; font-size:1.6rem;
   }
@@ -61,7 +61,7 @@
 
   .explain-list{ display:flex; flex-direction:column; gap:14px; margin-top:4px; }
   .explain-item{ display:flex; gap:12px; align-items:flex-start; }
-  .explain-dot{ flex:none; width:12px; height:12px; border-radius:4px; margin-top:4px; }
+  .explain-dot{ flex:none; width:12px; height:12px; border-radius:2px; margin-top:4px; }
   .explain-dot.bullish{ background:var(--accent); }
   .explain-dot.bearish{ background:var(--danger); }
   .explain-dot.neutral{ background:var(--gold); }
@@ -76,7 +76,7 @@
   .history-date{ font-family:var(--mono); color:var(--muted); font-size:0.8rem; }
   .history-tag{
     font-family:var(--mono); font-size:0.7rem; text-transform:uppercase; letter-spacing:0.03em;
-    padding:3px 9px; border-radius:999px;
+    padding:3px 9px; border-radius:3px;
   }
   .history-tag.bullish{ background:var(--accent-soft); color:var(--accent); }
   .history-tag.bearish{ background:var(--danger-soft); color:var(--danger); }
