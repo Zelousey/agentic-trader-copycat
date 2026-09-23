@@ -22,7 +22,7 @@
 <meta name="apple-mobile-web-app-title" content="Zelos">
 <meta name="theme-color" content="#4d3720">
 <meta name="robots" content="noindex">
-<meta name="description" content="What Zelos is seeing today — latest alerts, market status, your watchlist and skills.">
+<meta name="description" content="Your Zelos command center — the live globe, market status, My Agents, and active call tracking, all in one place.">
 <link rel="stylesheet" href="zelos-theme.css">
 <script>(function(){try{if(localStorage.getItem('zelosTheme')==='black')document.documentElement.setAttribute('data-theme','black');}catch(e){}})();</script>
 <style>
@@ -42,9 +42,10 @@
 
   .card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px 20px; }
   .card + .card{ margin-top:18px; }
-  .card-head{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:12px; gap:12px; }
+  .card-head{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:12px; gap:12px; flex-wrap:wrap; }
   .card-head h2{ font-size:1rem; margin:0; }
   .card-head a{ font-family:var(--mono); font-size:0.78rem; color:var(--accent); text-decoration:none; }
+  .card-sub{ font-size:0.82rem; color:var(--muted); margin:-6px 0 14px; }
 
   .status-line{ font-size:0.92rem; line-height:1.5; color:var(--ink-2); }
   .status-stamp{ font-family:var(--mono); font-size:0.72rem; color:var(--muted); margin-top:8px; }
@@ -109,6 +110,67 @@
   .fine{ font-size:0.72rem; color:var(--muted); line-height:1.5; }
   .user-chip{ font-family:var(--mono); font-size:0.78rem; color:var(--muted); white-space:nowrap; }
 
+  /* ---- My Agents ---- */
+  .agent-card{ border:1px solid var(--border-soft); border-radius:var(--radius); padding:14px 16px; }
+  .agent-card + .agent-card{ margin-top:10px; }
+  .agent-card-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+  .agent-name{ font-weight:600; font-size:0.92rem; }
+  .agent-sub{ font-size:0.76rem; color:var(--muted); margin-top:3px; }
+  .agent-open{ display:inline-block; margin-top:10px; font-family:var(--mono); font-size:0.74rem; color:var(--accent); text-decoration:none; }
+  .agent-toggle{ position:relative; display:inline-block; width:40px; height:22px; flex-shrink:0; }
+  .agent-toggle-input{ position:absolute; inset:0; opacity:0; margin:0; cursor:pointer; z-index:1; }
+  .agent-toggle-input:disabled{ cursor:not-allowed; }
+  .agent-toggle-track{ position:absolute; inset:0; background:var(--border); border-radius:999px; transition:background .15s ease; }
+  .agent-toggle-knob{ position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:var(--muted-2); transition:transform .15s ease, background .15s ease; }
+  .agent-toggle-input:checked ~ .agent-toggle-track{ background:var(--accent-soft); }
+  .agent-toggle-input:checked ~ .agent-toggle-knob{ transform:translateX(18px); background:var(--accent); }
+  .agent-toggle-input:focus-visible ~ .agent-toggle-track{ outline:2px solid var(--accent-line); outline-offset:2px; }
+  .agent-toggle-input:disabled ~ .agent-toggle-track{ opacity:0.5; }
+  .agents-lock-note{ font-size:0.78rem; color:var(--muted); margin-top:12px; }
+
+  /* ---- market visualization: globe / TradingView toggle ---- */
+  .viz-toggle{ display:inline-flex; border:1px solid var(--border); border-radius:6px; overflow:hidden; }
+  .viz-toggle-btn{ font-family:var(--mono); font-size:0.76rem; padding:8px 14px; border:none; background:var(--surface); color:var(--muted); cursor:pointer; }
+  .viz-toggle-btn + .viz-toggle-btn{ border-left:1px solid var(--border); }
+  .viz-toggle-btn.is-active{ background:var(--accent-soft); color:var(--accent); }
+  .viz-toggle-btn:hover:not(.is-active){ color:var(--ink); }
+
+  .chart-frame{
+    border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden;
+    background:var(--surface); height:640px; max-width:640px; margin-inline:auto;
+  }
+  .chart-frame .tradingview-widget-container{ height:100%; width:100%; }
+  @media (max-width:760px){ .chart-frame{ height:420px; max-width:420px; } }
+
+  /* ---- Live Signal Pulse ---- */
+  .pulse-table{ display:flex; flex-direction:column; }
+  .pulse-row{ display:grid; grid-template-columns:1.2fr 1fr 0.9fr 1fr; gap:10px; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-soft); font-size:0.85rem; }
+  .pulse-row:last-child{ border-bottom:none; }
+  .pulse-head{ font-family:var(--mono); font-size:0.66rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--muted); }
+  .pulse-strategy{ font-weight:600; }
+  .pulse-ticker{ font-family:var(--mono); }
+  .pulse-when{ font-size:0.76rem; color:var(--muted); }
+  @media (max-width:640px){
+    .pulse-row{ grid-template-columns:1fr 1fr; row-gap:4px; }
+    .pulse-head span:nth-child(3), .pulse-head span:nth-child(4){ display:none; }
+    .pulse-row:not(.pulse-head) span:nth-child(3), .pulse-row:not(.pulse-head) span:nth-child(4){ font-size:0.74rem; color:var(--muted); }
+  }
+
+  /* ---- Active trade / call tracking ---- */
+  .trade-card{ border:1px solid var(--border-soft); border-radius:var(--radius); padding:14px 16px; }
+  .trade-card + .trade-card{ margin-top:10px; }
+  .trade-top{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
+  .trade-strategy{ font-size:0.78rem; color:var(--muted); }
+  .trade-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; }
+  .trade-stat{ display:flex; flex-direction:column; gap:2px; }
+  .trade-stat .lbl{ font-size:0.66rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--muted); }
+  .trade-stat .val{ font-family:var(--mono); font-weight:600; font-size:0.9rem; }
+  .trade-stat .val.up{ color:var(--bull); }
+  .trade-stat .val.down{ color:var(--danger); }
+  .trade-foot{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:12px; font-size:0.78rem; color:var(--muted); flex-wrap:wrap; }
+  .trade-rr{ font-family:var(--mono); color:var(--ink-2); }
+  @media (max-width:520px){ .trade-grid{ grid-template-columns:repeat(2,1fr); row-gap:10px; } }
+
 </style>
 </head>
 <body class="zt zt-body">
@@ -119,6 +181,7 @@
 
     <div class="nav-primary" id="navPrimary">
       <a class="nav-link" href="index.html">Home</a>
+      <a class="nav-link" href="dashboard.html">Dashboard</a>
       <div class="nav-drop">
         <button class="nav-drop-btn" type="button" aria-haspopup="true" aria-expanded="false">Strategies <span class="nav-drop-caret">&#9662;</span></button>
         <div class="nav-drop-panel" hidden>
@@ -154,6 +217,7 @@
 
     <div class="nav-mobile-panel" id="navMobilePanel">
       <a href="index.html">Home</a>
+      <a href="dashboard.html">Dashboard</a>
       <div class="nav-mobile-label">Strategies</div>
       <a href="swing-trader.html">Swing Trader</a>
       <a href="breakout-rider.html">Breakout Rider</a>
@@ -177,8 +241,8 @@
   <div class="shell-narrow">
     <div>
       <p class="eyebrow">Dashboard</p>
-      <h1 style="font-size:1.5rem; margin-top:6px;">What Zelos is seeing today</h1>
-      <p class="status-line" style="margin-top:6px;">Market status, the latest alerts, and quick access to what's yours.</p>
+      <h1 style="font-size:1.5rem; margin-top:6px;">Your command center</h1>
+      <p class="status-line" style="margin-top:6px;">The live globe, market status, My Agents, and every active call — all in one place.</p>
       <div class="applinks">
         <a href="dashboard.html" class="is-active">Dashboard</a>
         <a href="my-zelos.html">My Zelos</a>
@@ -195,13 +259,150 @@
       <div class="status-stamp" id="marketStamp"></div>
     </div>
 
-    <!-- Latest alerts -->
+    <!-- My Agents -->
+    <div class="card">
+      <div class="card-head"><h2>My Agents</h2></div>
+      <div class="card-sub">Turn alert notifications on or off per strategy. Every agent keeps scanning either way — this just controls what pings you.</div>
+      <div id="agentsBlock">
+        <div class="agent-card" data-strategy="swing-trader">
+          <div class="agent-card-top">
+            <div>
+              <div class="agent-name">Swing Trader</div>
+              <div class="agent-sub" id="agentSub-swing-trader">Loading…</div>
+            </div>
+            <label class="agent-toggle">
+              <input type="checkbox" class="agent-toggle-input" id="agentToggle-swing-trader" data-strategy="swing-trader" disabled>
+              <span class="agent-toggle-track"></span>
+              <span class="agent-toggle-knob"></span>
+            </label>
+          </div>
+          <a class="agent-open" href="swing-trader.html">Open strategy &rarr;</a>
+        </div>
+        <div class="agent-card" data-strategy="breakout-rider">
+          <div class="agent-card-top">
+            <div>
+              <div class="agent-name">Breakout Rider</div>
+              <div class="agent-sub" id="agentSub-breakout-rider">Loading…</div>
+            </div>
+            <label class="agent-toggle">
+              <input type="checkbox" class="agent-toggle-input" id="agentToggle-breakout-rider" data-strategy="breakout-rider" disabled>
+              <span class="agent-toggle-track"></span>
+              <span class="agent-toggle-knob"></span>
+            </label>
+          </div>
+          <a class="agent-open" href="breakout-rider.html">Open strategy &rarr;</a>
+        </div>
+        <div class="agent-card" data-strategy="options-scanner">
+          <div class="agent-card-top">
+            <div>
+              <div class="agent-name">Options Scanner</div>
+              <div class="agent-sub" id="agentSub-options-scanner">Loading…</div>
+            </div>
+            <label class="agent-toggle">
+              <input type="checkbox" class="agent-toggle-input" id="agentToggle-options-scanner" data-strategy="options-scanner" disabled>
+              <span class="agent-toggle-track"></span>
+              <span class="agent-toggle-knob"></span>
+            </label>
+          </div>
+          <a class="agent-open" href="options-scanner.html">Open strategy &rarr;</a>
+        </div>
+      </div>
+      <div class="agents-lock-note" id="agentsLockNote">Sign in to control which agents notify you.</div>
+    </div>
+
+    <!-- Market visualization: globe / TradingView -->
     <div class="card">
       <div class="card-head">
-        <h2>Latest alerts</h2>
-        <a href="alert-history.html">See all &rarr;</a>
+        <h2>Market visualization</h2>
+        <div class="viz-toggle" role="group" aria-label="Choose visualization">
+          <button type="button" class="viz-toggle-btn is-active" id="vizGlobeBtn" data-viz="globe">Globe</button>
+          <button type="button" class="viz-toggle-btn" id="vizChartBtn" data-viz="chart">TradingView</button>
+        </div>
       </div>
-      <div id="alertsList"><div class="empty">Loading…</div></div>
+      <div class="card-sub">Drag to rotate, scroll to zoom — or switch to a full TradingView chart. The globe's country shading and the panels below are mocked up for layout, not a live index feed.</div>
+
+      <div id="vizGlobePane">
+        <div class="globe-page-grid">
+          <div>
+            <div class="globe-panel">
+              <h3>Global Market Overview</h3>
+              <div class="globe-stat-row"><span>S&amp;P 500</span><span>5,762.48 <span class="chg up">+1.21%</span></span></div>
+              <div class="globe-stat-row"><span>Nasdaq</span><span>18,182.86 <span class="chg up">+1.63%</span></span></div>
+              <div class="globe-stat-row"><span>Dow Jones</span><span>42,219.64 <span class="chg up">+0.87%</span></span></div>
+            </div>
+            <div class="globe-panel">
+              <h3>Top Sectors</h3>
+              <div class="globe-stat-row"><span>Technology</span><span class="chg up">+2.41%</span></div>
+              <div class="globe-stat-row"><span>Communication Services</span><span class="chg up">+1.87%</span></div>
+              <div class="globe-stat-row"><span>Consumer Cyclical</span><span class="chg up">+1.32%</span></div>
+              <div class="globe-stat-row"><span>Healthcare</span><span class="chg up">+0.96%</span></div>
+              <div class="globe-stat-row"><span>Energy</span><span class="chg dn">&minus;0.34%</span></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="globe-frame">
+              <div class="globe-wrap" id="dashGlobe"></div>
+              <div class="globe-live-tag"><span class="dot"></span>Mock data &middot; <span id="dashGlobeClock"></span></div>
+
+              <div class="heatmap-card" id="dashHeatMapCard">
+                <div class="heatmap-card-head">
+                  <span>Heat index</span>
+                  <button class="heatmap-card-close" id="dashHeatMapClose" type="button" aria-label="Close heat map">&times;</button>
+                </div>
+                <div class="heatmap-svg-wrap" id="dashHeatMapSvg"></div>
+                <div class="globe-legend">
+                  <span><i style="background:var(--bull);"></i>Strong up</span>
+                  <span><i style="background:color-mix(in srgb, var(--bull) 55%, var(--muted-2));"></i>Up</span>
+                  <span><i style="background:var(--muted-2);"></i>Flat</span>
+                  <span><i style="background:color-mix(in srgb, var(--danger) 55%, var(--muted-2));"></i>Down</span>
+                  <span><i style="background:var(--danger);"></i>Strong down</span>
+                </div>
+              </div>
+              <button class="heatmap-reopen" id="dashHeatMapReopen" type="button" hidden>&#9633; Heat index</button>
+            </div>
+            <div class="globe-hint">Drag to rotate &middot; scroll to zoom &middot; badges show a country's live move</div>
+          </div>
+
+          <div>
+            <div class="globe-panel">
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                <h3 style="margin:0;">Trending Now</h3>
+                <a href="alert-history.html" style="font-family:var(--mono); font-size:0.72rem; color:var(--accent); text-decoration:none;">View all &rarr;</a>
+              </div>
+              <div class="globe-trend-row"><span class="sym-badge">N</span><span class="meta"><span class="ticker">NVDA</span><span class="name">NVIDIA</span></span><span class="chg up">+4.82%</span></div>
+              <div class="globe-trend-row"><span class="sym-badge">T</span><span class="meta"><span class="ticker">TSLA</span><span class="name">Tesla</span></span><span class="chg up">+2.31%</span></div>
+              <div class="globe-trend-row"><span class="sym-badge">A</span><span class="meta"><span class="ticker">AMD</span><span class="name">AMD</span></span><span class="chg up">+2.15%</span></div>
+              <div class="globe-trend-row"><span class="sym-badge">P</span><span class="meta"><span class="ticker">PLTR</span><span class="name">Palantir</span></span><span class="chg up">+3.12%</span></div>
+              <div class="globe-trend-row"><span class="sym-badge">A</span><span class="meta"><span class="ticker">AMZN</span><span class="name">Amazon</span></span><span class="chg up">+1.76%</span></div>
+              <div class="globe-trend-row"><span class="sym-badge">R</span><span class="meta"><span class="ticker">RIVN</span><span class="name">Rivian</span></span><span class="chg dn">&minus;1.24%</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="vizChartPane" hidden>
+        <div class="chart-frame">
+          <div class="tradingview-widget-container" id="dashChartWidget"><div class="tradingview-widget-container__widget"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Signal Pulse -->
+    <div class="card">
+      <div class="card-head"><h2>Live Signal Pulse</h2><a href="alert-history.html">Full history &rarr;</a></div>
+      <div class="card-sub">The most recent call from each agent, live from Firestore.</div>
+      <div class="pulse-table" id="pulseTable">
+        <div class="pulse-row pulse-head"><span>Strategy</span><span>Last call</span><span>Status</span><span>When</span></div>
+        <div class="empty">Loading…</div>
+      </div>
+    </div>
+
+    <!-- Active trade / call tracking -->
+    <div class="card">
+      <div class="card-head"><h2>Active call tracking</h2></div>
+      <div class="card-sub">Every currently-qualified call, with its published entry, stop, and targets. Live price tracking against these levels isn't wired up yet — this shows each call's plan, not a real-time profit/loss.</div>
+      <div id="activeTradesBlock"><div class="empty">Loading…</div></div>
     </div>
 
     <!-- Progress (XP/streak) -->
@@ -230,7 +431,7 @@
       </div>
     </div>
 
-    <p class="fine" style="margin-top:22px;">Rule-based scans only — general information, not personalized advice. Not a registered investment adviser. Trading involves risk, including loss of principal.</p>
+    <p class="fine" style="margin-top:22px;">Rule-based scans only — general information, not personalized advice. Not a registered investment adviser. Trading involves risk, including loss of principal. Active call tracking shows published entry/stop/target levels only; it is not a live profit/loss feed and outcomes are not simulated or projected.</p>
   </div>
 </section>
 
@@ -290,6 +491,11 @@
 <script src="firebase-config.js"></script>
 <script src="zelos-mood.js"></script>
 <script src="zelos-xp.js"></script>
+
+<!-- 3D globe — see zelos-globe.js. Only mounted while the Globe pane is visible. -->
+<script src="https://cdn.jsdelivr.net/npm/globe.gl"></script>
+<script src="zelos-globe.js"></script>
+
 <script>
 (function(){
   var SKILLS = {
@@ -297,6 +503,7 @@
     'breakout-rider': { name: 'Breakout Rider', href: 'breakout-rider.html' },
     'options-scanner':{ name: 'Options Scanner', href: 'options-scanner.html' }
   };
+  var STRATEGY_ORDER = ['swing-trader', 'breakout-rider', 'options-scanner'];
   var STRATEGY_LABEL = { 'swing-trader':'Swing Trader', 'breakout-rider':'Breakout Rider', 'options-scanner':'Options Scanner' };
 
   var cfg = window.ZELOS_FIREBASE_CONFIG;
@@ -317,6 +524,12 @@
       return d.toLocaleString('en-US', { timeZone:'America/New_York', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }) + ' ET';
     } catch(e){ return ''; }
   }
+  function fmtShortStamp(ts){
+    try {
+      var d = ts && ts.toDate ? ts.toDate() : new Date(ts);
+      return d.toLocaleDateString('en-US', { timeZone:'America/New_York', month:'short', day:'numeric' });
+    } catch(e){ return ''; }
+  }
   function statusClass(status){
     if (status === 'qualified') return 'qualified';
     if (status === 'watching') return 'watching';
@@ -327,41 +540,126 @@
     if (status === 'watching') return 'Watching';
     return 'No setup';
   }
+  function fmtPrice(n){
+    if (typeof n !== 'number' || isNaN(n)) return '—';
+    return n.toFixed(n < 10 ? 3 : 2);
+  }
 
-  // ---- market status + latest alerts (public, no auth needed) ----
-  function loadAlerts(){
-    if (!ready) {
-      document.getElementById('alertsList').innerHTML = '<div class="empty">Can\'t reach Zelos data right now — check back shortly.</div>';
-      document.getElementById('marketStatus').textContent = 'Unavailable right now.';
-      return;
-    }
-    db.collection('alerts').orderBy('createdAt', 'desc').limit(6).get().then(function(snap){
-      if (snap.empty) {
-        document.getElementById('alertsList').innerHTML = '<div class="empty">No alerts yet.</div>';
-        document.getElementById('marketStatus').textContent = 'No scans recorded yet.';
+  // ---- market status + latest alerts + My Agents performance + Live Signal
+  //      Pulse + active call tracking, all derived from ONE recent-alerts
+  //      fetch (public, no auth needed) ----
+  function renderAgentPerformance(byStrategy){
+    STRATEGY_ORDER.forEach(function(id){
+      var el = document.getElementById('agentSub-' + id);
+      if (!el) return;
+      var s = byStrategy[id];
+      if (!s || !s.count) { el.textContent = 'No alerts yet'; return; }
+      var openTxt = s.openCount ? (s.openCount + ' open now') : 'none open now';
+      el.textContent = s.count + ' recent alert' + (s.count === 1 ? '' : 's') + ' · ' + openTxt;
+    });
+  }
+
+  function renderPulseTable(byStrategy){
+    var wrap = document.getElementById('pulseTable');
+    var rows = ['<div class="pulse-row pulse-head"><span>Strategy</span><span>Last call</span><span>Status</span><span>When</span></div>'];
+    STRATEGY_ORDER.forEach(function(id){
+      var s = byStrategy[id];
+      if (!s || !s.latest) {
+        rows.push(
+          '<div class="pulse-row"><span class="pulse-strategy">' + STRATEGY_LABEL[id] + '</span>' +
+          '<span class="empty" style="padding:0;">No alerts yet</span><span></span><span></span></div>'
+        );
         return;
       }
-      var rows = [];
-      var first = null;
-      snap.forEach(function(doc){
-        var a = doc.data();
-        if (!first) first = a;
-        rows.push(
-          '<a class="alert-row" href="alert.html?id=' + encodeURIComponent(doc.id) + '">' +
-            '<div class="alert-left">' +
-              '<span class="alert-ticker">' + (a.ticker || '—') + '</span>' +
-              '<span class="alert-meta">' + (STRATEGY_LABEL[a.strategy] || a.strategy || '') + ' · ' + fmtStamp(a.createdAt) + '</span>' +
-            '</div>' +
+      var a = s.latest;
+      rows.push(
+        '<div class="pulse-row">' +
+          '<span class="pulse-strategy">' + STRATEGY_LABEL[id] + '</span>' +
+          '<span class="pulse-ticker">' + (a.ticker || '—') + '</span>' +
+          '<span class="alert-badge ' + statusClass(a.status) + '" style="justify-self:start;">' + statusLabel(a.status) + '</span>' +
+          '<span class="pulse-when">' + fmtShortStamp(a.createdAt) + '</span>' +
+        '</div>'
+      );
+    });
+    wrap.innerHTML = rows.join('');
+  }
+
+  function renderActiveTrades(openAlerts){
+    var block = document.getElementById('activeTradesBlock');
+    if (!openAlerts.length) {
+      block.innerHTML = '<div class="empty">No qualified calls open right now.</div>';
+      return;
+    }
+    block.innerHTML = openAlerts.slice(0, 8).map(function(item){
+      var a = item.data;
+      var rr = (typeof a.rewardRiskRatio === 'number') ? ('1 : ' + a.rewardRiskRatio.toFixed(1)) : '—';
+      var outcome = (a.outcome && a.outcome.result) ? a.outcome.result : null;
+      var outcomeTxt = outcome ? outcome.replace('-', ' ') : 'Not tracked live yet';
+      return (
+        '<div class="trade-card">' +
+          '<div class="trade-top">' +
+            '<span class="alert-ticker">' + (a.ticker || '—') + '</span>' +
+            '<span class="trade-strategy">' + (STRATEGY_LABEL[a.strategy] || a.strategy || '') + '</span>' +
             '<span class="alert-badge ' + statusClass(a.status) + '">' + statusLabel(a.status) + '</span>' +
-          '</a>'
-        );
-      });
-      document.getElementById('alertsList').innerHTML = rows.join('');
+          '</div>' +
+          '<div class="trade-grid">' +
+            '<div class="trade-stat"><span class="lbl">Entry</span><span class="val">' + fmtPrice(a.entry) + '</span></div>' +
+            '<div class="trade-stat"><span class="lbl">Stop</span><span class="val down">' + fmtPrice(a.stop) + '</span></div>' +
+            '<div class="trade-stat"><span class="lbl">Target 1</span><span class="val up">' + fmtPrice(a.target1) + '</span></div>' +
+            '<div class="trade-stat"><span class="lbl">Target 2</span><span class="val up">' + fmtPrice(a.target2) + '</span></div>' +
+          '</div>' +
+          '<div class="trade-foot">' +
+            '<span class="trade-rr">Risk:reward ' + rr + '</span>' +
+            '<span>Status: <b>' + outcomeTxt + '</b></span>' +
+          '</div>' +
+        '</div>'
+      );
+    }).join('');
+  }
+
+  function loadAlerts(){
+    if (!ready) {
+      document.getElementById('marketStatus').textContent = 'Unavailable right now.';
+      document.getElementById('pulseTable').innerHTML = '<div class="empty">Can\'t reach Zelos data right now — check back shortly.</div>';
+      document.getElementById('activeTradesBlock').innerHTML = '<div class="empty">Can\'t reach Zelos data right now — check back shortly.</div>';
+      renderAgentPerformance({});
+      return;
+    }
+    db.collection('alerts').orderBy('createdAt', 'desc').limit(30).get().then(function(snap){
+      if (snap.empty) {
+        document.getElementById('marketStatus').textContent = 'No scans recorded yet.';
+        document.getElementById('pulseTable').innerHTML = '<div class="empty">No alerts yet.</div>';
+        document.getElementById('activeTradesBlock').innerHTML = '<div class="empty">No qualified calls yet.</div>';
+        renderAgentPerformance({});
+        return;
+      }
+      var all = [];
+      snap.forEach(function(doc){ all.push({ id: doc.id, data: doc.data() }); });
+
+      var first = all[0].data;
       document.getElementById('marketStatus').textContent = first.marketRegime || 'No market-regime note on the latest alert.';
       document.getElementById('marketStamp').textContent = 'As of ' + fmtStamp(first.createdAt);
+
+      // per-strategy breakdown, from the same 30-alert window
+      var byStrategy = {};
+      STRATEGY_ORDER.forEach(function(id){ byStrategy[id] = { count:0, openCount:0, latest:null }; });
+      all.forEach(function(item){
+        var a = item.data;
+        var s = byStrategy[a.strategy];
+        if (!s) return;
+        s.count++;
+        if (a.status === 'qualified') s.openCount++;
+        if (!s.latest) s.latest = a;
+      });
+      renderAgentPerformance(byStrategy);
+      renderPulseTable(byStrategy);
+
+      var openAlerts = all.filter(function(item){ return item.data.status === 'qualified'; });
+      renderActiveTrades(openAlerts);
     }).catch(function(){
-      document.getElementById('alertsList').innerHTML = '<div class="empty">Couldn\'t load alerts right now.</div>';
       document.getElementById('marketStatus').textContent = 'Unavailable right now.';
+      document.getElementById('pulseTable').innerHTML = '<div class="empty">Couldn\'t load Zelos data right now.</div>';
+      document.getElementById('activeTradesBlock').innerHTML = '<div class="empty">Couldn\'t load Zelos data right now.</div>';
     });
   }
 
@@ -399,6 +697,7 @@
 
     var pop = document.getElementById('authPop');
     var mode = 'signin';
+    function goToDashboardAfterAuth(){ if (location.pathname.indexOf('dashboard.html') === -1) { location.href = 'dashboard.html'; } }
     function setMsg(text, isError){
       var el = document.getElementById('authMsg');
       el.textContent = text || '';
@@ -423,17 +722,17 @@
       var pw = document.getElementById('authPassword').value;
       if (mode === 'signup') {
         setMsg('Creating account…');
-        auth.createUserWithEmailAndPassword(email, pw).catch(function(e){ setMsg(e.message, true); });
+        auth.createUserWithEmailAndPassword(email, pw).then(goToDashboardAfterAuth).catch(function(e){ setMsg(e.message, true); });
       } else {
         setMsg('Signing in…');
-        auth.signInWithEmailAndPassword(email, pw).catch(function(e){ setMsg(e.message, true); });
+        auth.signInWithEmailAndPassword(email, pw).then(goToDashboardAfterAuth).catch(function(e){ setMsg(e.message, true); });
       }
     });
     document.getElementById('googleSignInBtn').addEventListener('click', function(){
       if (!ready) return setMsg('Can\'t reach sign-in right now.', true);
       var provider = new firebase.auth.GoogleAuthProvider();
       setMsg('Opening Google sign-in…');
-      auth.signInWithPopup(provider).catch(function(e){ setMsg(e.message, true); });
+      auth.signInWithPopup(provider).then(goToDashboardAfterAuth).catch(function(e){ setMsg(e.message, true); });
     });
   }
 
@@ -453,7 +752,7 @@
     document.getElementById('signOutLink').addEventListener('click', function(e){ e.preventDefault(); auth.signOut(); });
   }
 
-  // ---- per-user: watchlist + owned skills ----
+  // ---- per-user: watchlist + owned skills + My Agents toggles ----
   function userDocRef(uid){ return db.collection('users').doc(uid); }
 
   function ensureUserDoc(user){
@@ -532,6 +831,54 @@
     });
   }
 
+  // My Agents: notificationPrefs.strategies holds which strategies this user
+  // is subscribed to. Absent entirely = subscribed to all (default on for
+  // new/never-touched accounts) so nobody has to opt in to get alerts.
+  function renderAgentToggles(user, data){
+    document.getElementById('agentsLockNote').hidden = true;
+    var prefs = data.notificationPrefs || {};
+    var active = prefs.strategies; // undefined => all on by default
+    STRATEGY_ORDER.forEach(function(id){
+      var input = document.getElementById('agentToggle-' + id);
+      if (!input) return;
+      input.disabled = false;
+      input.checked = active ? (active.indexOf(id) !== -1) : true;
+    });
+  }
+
+  function renderAgentsLocked(){
+    document.getElementById('agentsLockNote').hidden = false;
+    STRATEGY_ORDER.forEach(function(id){
+      var input = document.getElementById('agentToggle-' + id);
+      if (!input) return;
+      input.disabled = true;
+      input.checked = true;
+    });
+  }
+
+  function setAgentActive(user, strategyId, isActive){
+    var ref = userDocRef(user.uid);
+    ref.get().then(function(doc){
+      var data = doc.data() || {};
+      var prefs = data.notificationPrefs || {};
+      var current = prefs.strategies ? prefs.strategies.slice() : STRATEGY_ORDER.slice();
+      var idx = current.indexOf(strategyId);
+      if (isActive && idx === -1) current.push(strategyId);
+      if (!isActive && idx !== -1) current.splice(idx, 1);
+      var nextPrefs = {};
+      Object.keys(prefs).forEach(function(k){ nextPrefs[k] = prefs[k]; });
+      nextPrefs.strategies = current;
+      ref.set({ notificationPrefs: nextPrefs }, { merge: true });
+    });
+  }
+
+  document.querySelectorAll('.agent-toggle-input').forEach(function(input){
+    input.addEventListener('change', function(){
+      if (!currentUser) { input.checked = true; return; }
+      setAgentActive(currentUser, input.dataset.strategy, input.checked);
+    });
+  });
+
   // A Gumroad purchase writes a pendingOwnership/{email} doc (by our own webhook,
   // server-side) before this person may have ever signed in here. The first time
   // they sign in with the same email, fold that into their own ownedSkills and
@@ -558,6 +905,7 @@
         renderProgress(user, data);
         renderWatchlist(user, data);
         renderSkills(user, data);
+        renderAgentToggles(user, data);
       });
       // Silent, once-per-day XP for showing up — never blocks anything above.
       if (window.ZelosXP) ZelosXP.award('daily-checkin');
@@ -568,6 +916,7 @@
     document.getElementById('progressCard').hidden = true;
     document.getElementById('watchlistBlock').innerHTML = '<div class="lock"><p>Sign in to save a watchlist.</p></div>';
     document.getElementById('skillsBlock').innerHTML = '<div class="lock"><p>Sign in to see which Zelos skills you own and jump straight to them.</p></div>';
+    renderAgentsLocked();
   }
 
   if (ready) {
@@ -581,11 +930,124 @@
     });
   } else {
     renderSignedOut();
+    renderAgentsLocked();
   }
 
   loadAlerts();
 })();
 </script>
 
+<script>
+(function(){
+  // ---- the 3D globe (only mounted once, reused across toggle switches) ----
+  var el = document.getElementById('dashGlobe');
+  var globeMounted = false;
+  function mountGlobeOnce(){
+    if (globeMounted || !el || !window.ZelosGlobe) return;
+    globeMounted = true;
+    ZelosGlobe.mount({
+      el: el,
+      flatMapEl: document.getElementById('dashHeatMapSvg'),
+      autoRotate: true,
+      enableZoom: true,
+      altitude: 2.2,
+      badges: [
+        { name:'Canada', lat:56, lng:-106, pct:0.62 },
+        { name:'U.S.', lat:39, lng:-98, pct:1.21 },
+        { name:'Germany', lat:51, lng:10, pct:0.48 },
+        { name:'China', lat:35, lng:103, pct:-0.87 },
+        { name:'Brazil', lat:-14, lng:-52, pct:1.56 },
+        { name:'Australia', lat:-25, lng:134, pct:0.34 }
+      ]
+    });
+  }
+
+  // heat-map card: dismissible with the X, reopenable from the small pill
+  // that takes its place — remembered per-browser.
+  (function () {
+    var card = document.getElementById('dashHeatMapCard');
+    var reopenBtn = document.getElementById('dashHeatMapReopen');
+    var closeBtn = document.getElementById('dashHeatMapClose');
+    if (!card || !reopenBtn || !closeBtn) return;
+    var KEY = 'zelosHeatMapClosed';
+    function setClosed(closed) {
+      card.hidden = closed;
+      reopenBtn.hidden = !closed;
+      try { localStorage.setItem(KEY, closed ? '1' : '0'); } catch (e) { /* ignore */ }
+    }
+    var startClosed = false;
+    try { startClosed = localStorage.getItem(KEY) === '1'; } catch (e) { /* ignore */ }
+    setClosed(startClosed);
+    closeBtn.addEventListener('click', function () { setClosed(true); });
+    reopenBtn.addEventListener('click', function () { setClosed(false); });
+  })();
+
+  var clock = document.getElementById('dashGlobeClock');
+  function tick(){
+    if (!clock) return;
+    var now = new Date();
+    clock.textContent = now.toLocaleDateString('en-US', { month:'short', day:'numeric' }) + ' ' +
+      now.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' });
+  }
+  tick();
+  setInterval(tick, 30000);
+
+  // ---- TradingView chart (mounted lazily, only the first time the pane is shown) ----
+  var chartHost = document.getElementById('dashChartWidget');
+  var chartMounted = false;
+  function mountChartOnce(){
+    if (chartMounted || !chartHost) return;
+    chartMounted = true;
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
+    script.async = true;
+    script.text = JSON.stringify({
+      autosize: true,
+      symbol: 'FOREXCOM:SPXUSD',
+      interval: 'D',
+      timezone: 'America/New_York',
+      theme: 'dark',
+      style: '1',
+      locale: 'en',
+      allow_symbol_change: true,
+      hide_top_toolbar: false,
+      hide_side_toolbar: false,
+      hide_legend: false,
+      save_image: false,
+      calendar: false,
+      backgroundColor: 'rgba(18,23,41,1)',
+      gridColor: 'rgba(35,43,70,0.55)'
+    });
+    chartHost.appendChild(script);
+  }
+
+  // ---- Globe / TradingView toggle — remembers the visitor's choice ----
+  var VIZ_KEY = 'zelosDashboardViz';
+  var globeBtn = document.getElementById('vizGlobeBtn');
+  var chartBtn = document.getElementById('vizChartBtn');
+  var globePane = document.getElementById('vizGlobePane');
+  var chartPane = document.getElementById('vizChartPane');
+
+  function setViz(mode, persist){
+    var isChart = mode === 'chart';
+    globePane.hidden = isChart;
+    chartPane.hidden = !isChart;
+    globeBtn.classList.toggle('is-active', !isChart);
+    chartBtn.classList.toggle('is-active', isChart);
+    if (isChart) mountChartOnce(); else mountGlobeOnce();
+    if (persist) {
+      try { localStorage.setItem(VIZ_KEY, mode); } catch (e) { /* ignore */ }
+    }
+  }
+
+  globeBtn.addEventListener('click', function(){ setViz('globe', true); });
+  chartBtn.addEventListener('click', function(){ setViz('chart', true); });
+
+  var startMode = 'globe';
+  try { var saved = localStorage.getItem(VIZ_KEY); if (saved === 'chart' || saved === 'globe') startMode = saved; } catch (e) { /* ignore */ }
+  setViz(startMode, false);
+})();
+</script>
 </body>
 </html>

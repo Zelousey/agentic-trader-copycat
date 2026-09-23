@@ -74,6 +74,7 @@
 
     <div class="nav-primary" id="navPrimary">
       <a class="nav-link" href="index.html">Home</a>
+      <a class="nav-link" href="dashboard.html">Dashboard</a>
       <div class="nav-drop">
         <button class="nav-drop-btn" type="button" aria-haspopup="true" aria-expanded="false">Strategies <span class="nav-drop-caret">&#9662;</span></button>
         <div class="nav-drop-panel" hidden>
@@ -109,6 +110,7 @@
 
     <div class="nav-mobile-panel" id="navMobilePanel">
       <a href="index.html">Home</a>
+      <a href="dashboard.html">Dashboard</a>
       <div class="nav-mobile-label">Strategies</div>
       <a href="swing-trader.html">Swing Trader</a>
       <a href="breakout-rider.html">Breakout Rider</a>
@@ -281,6 +283,7 @@
 
     var pop = document.getElementById('authPop');
     var mode = 'signin';
+    function goToDashboardAfterAuth(){ if (location.pathname.indexOf('dashboard.html') === -1) { location.href = 'dashboard.html'; } }
     function setMsg(text, isError){
       var el = document.getElementById('authMsg');
       el.textContent = text || '';
@@ -305,17 +308,17 @@
       var pw = document.getElementById('authPassword').value;
       if (mode === 'signup') {
         setMsg('Creating account…');
-        auth.createUserWithEmailAndPassword(email, pw).catch(function(e){ setMsg(e.message, true); });
+        auth.createUserWithEmailAndPassword(email, pw).then(goToDashboardAfterAuth).catch(function(e){ setMsg(e.message, true); });
       } else {
         setMsg('Signing in…');
-        auth.signInWithEmailAndPassword(email, pw).catch(function(e){ setMsg(e.message, true); });
+        auth.signInWithEmailAndPassword(email, pw).then(goToDashboardAfterAuth).catch(function(e){ setMsg(e.message, true); });
       }
     });
     document.getElementById('googleSignInBtn').addEventListener('click', function(){
       if (!ready) return setMsg('Can\'t reach sign-in right now.', true);
       var provider = new firebase.auth.GoogleAuthProvider();
       setMsg('Opening Google sign-in…');
-      auth.signInWithPopup(provider).catch(function(e){ setMsg(e.message, true); });
+      auth.signInWithPopup(provider).then(goToDashboardAfterAuth).catch(function(e){ setMsg(e.message, true); });
     });
   }
 
