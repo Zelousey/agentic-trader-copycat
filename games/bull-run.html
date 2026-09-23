@@ -89,7 +89,7 @@
   .nav-menu-list{
     position:absolute; top:calc(100% + 8px); right:0; min-width:170px;
     background:var(--card); border:1px solid var(--line); border-radius:12px;
-    padding:8px; display:flex; flex-direction:column; gap:2px; z-index:20;
+    padding:8px; display:flex; flex-direction:column; gap:2px; z-index:30;
     box-shadow:0 12px 28px rgba(0,0,0,0.18);
   }
   .nav-menu-list a{
@@ -126,8 +126,9 @@
   .overlay{
     position:absolute; inset:0; z-index:20;
     background:var(--card);
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
     text-align:center; padding:28px 24px; gap:14px;
+    overflow-y:auto; -webkit-overflow-scrolling:touch;
   }
   .overlay h2{ font-size:1.3rem; font-weight:700; }
   .overlay p{ color:var(--muted); font-size:0.9rem; max-width:32ch; }
@@ -154,7 +155,7 @@
   }
   .lb-status{ font-family:var(--mono); font-size:0.72rem; color:var(--muted); margin-bottom:8px; }
   .lb-title{ font-family:var(--mono); font-size:0.68rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
-  .lb-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:4px; }
+  .lb-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:4px; max-height:130px; overflow-y:auto; }
   .lb-list li{
     display:flex; justify-content:space-between; gap:10px; font-family:var(--mono); font-size:0.82rem;
     padding:6px 10px; border-radius:7px; background:var(--paper);
@@ -188,6 +189,7 @@
           <a href="../demo.html">Try the demo</a>
           <a href="../arcade.html">Arcade</a>
           <a href="../leaderboard.html">Leaderboard</a>
+          <a href="../ai-knowledge-catalog.html">Knowledge catalog</a>
           <a href="../terms.html">Terms</a>
         </div>
       </div>
