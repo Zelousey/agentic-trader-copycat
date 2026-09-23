@@ -86,6 +86,33 @@
   .stat .lbl{ font-size:0.76rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.04em; }
   .progress-note{ font-size:0.78rem; color:var(--muted); margin-top:10px; }
 
+  /* ---- XP levels: a badge you level up into, plus a bar toward the next one ---- */
+  .level-row{ display:flex; align-items:center; gap:9px; margin-top:14px; }
+  .level-badge{ font-size:1.35rem; line-height:1; }
+  .level-name{ font-weight:600; font-size:0.9rem; }
+  .level-bar{ height:6px; border-radius:999px; background:var(--border-soft); margin-top:9px; overflow:hidden; }
+  .level-bar-fill{ height:100%; background:var(--accent); border-radius:999px; transition:width .5s ease; }
+  .level-next{ font-size:0.74rem; color:var(--muted); margin-top:7px; }
+
+  /* ---- toasts: XP gains and level-ups pop up here, bottom-right, and fade themselves out ---- */
+  .zelos-toast-stack{
+    position:fixed; right:18px; bottom:18px; z-index:9999;
+    display:flex; flex-direction:column-reverse; gap:10px; pointer-events:none;
+  }
+  .zelos-toast{
+    display:flex; align-items:center; gap:10px; max-width:280px;
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:12px 16px; box-shadow:0 10px 28px rgba(0,0,0,0.4);
+    animation:zt-toast-in .25s ease-out, zt-toast-out .35s ease-in 3.65s forwards;
+  }
+  .zelos-toast.is-level{ border-color:var(--accent-line); background:var(--accent-soft); }
+  .zelos-toast-icon{ font-size:1.5rem; line-height:1; flex-shrink:0; }
+  .zelos-toast-title{ font-weight:700; font-size:0.86rem; display:block; }
+  .zelos-toast-sub{ font-size:0.76rem; color:var(--muted); display:block; margin-top:2px; }
+  @keyframes zt-toast-in{ from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:translateY(0); } }
+  @keyframes zt-toast-out{ to{ opacity:0; transform:translateY(-6px); } }
+  @media (prefers-reduced-motion: reduce){ .zelos-toast{ animation:none; } }
+
   .skill-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 0; border-bottom:1px solid var(--border-soft); }
   .skill-row:last-child{ border-bottom:none; }
   .skill-name{ font-weight:600; font-size:0.92rem; }
@@ -107,11 +134,26 @@
   @media (max-width:1200px){ .dash-grid{ grid-template-columns:1fr 1fr; } .dash-col:nth-child(3){ grid-column:1 / -1; } }
   @media (max-width:820px){ .dash-grid{ grid-template-columns:1fr; } .dash-col:nth-child(3){ grid-column:auto; } }
 
-  .dash-bottom-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:18px; margin-top:18px; }
+  /* same three column widths as .dash-grid above, so the bottom row's cards
+     line up edge-to-edge with the columns they sit under instead of being
+     evenly split thirds against an uneven grid. */
+  .dash-bottom-grid{ display:grid; grid-template-columns:300px 1fr 320px; gap:18px; margin-top:18px; }
   .dash-bottom-grid .card{ margin-top:0; }
-  @media (max-width:900px){ .dash-bottom-grid{ grid-template-columns:1fr; } }
+  @media (max-width:1200px){ .dash-bottom-grid{ grid-template-columns:1fr 1fr; } .dash-bottom-grid > *:nth-child(3){ grid-column:1 / -1; } }
+  @media (max-width:820px){ .dash-bottom-grid{ grid-template-columns:1fr; } .dash-bottom-grid > *:nth-child(3){ grid-column:auto; } }
 
   .intro-copy{ max-width:64ch; }
+
+  /* falling digit-rain texture, spanning the whole page (fixed to the
+     viewport, like the dot-grid backdrop in the shared theme) rather than
+     just a hero band — same columns/animation as the Home page hero, just
+     stretched full-height and kept faint so it reads as ambient texture
+     behind the cards, not a distraction. */
+  .page-rain{
+    position:fixed; inset:0; z-index:-1; display:flex; justify-content:space-between; gap:2px;
+    overflow:hidden; opacity:0.10; pointer-events:none;
+  }
+  @media (prefers-reduced-motion: reduce){ .page-rain{ display:none; } }
 
   /* ---- My Agents ---- */
   .agent-card{ border:1px solid var(--border-soft); border-radius:var(--radius); padding:14px 16px; }
@@ -122,6 +164,25 @@
   .agent-open{ display:inline-block; margin-top:8px; font-family:var(--mono); font-size:0.74rem; color:var(--accent); text-decoration:none; }
   .agent-chart{ margin-top:10px; border-radius:4px; overflow:hidden; background:var(--bg-soft); padding:6px 6px 0; }
   .agent-chart svg{ display:block; width:100%; height:auto; max-height:56px; }
+
+  /* an agent that's currently "on" (notifying you) gets a green edge, so the
+     card itself shows its state at a glance instead of just the small toggle. */
+  .agent-card.is-on{ border-color:var(--bull); box-shadow:0 0 0 1px var(--bull); }
+
+  /* small pulsing badge that appears on a card when its strategy has an alert
+     this browser hasn't seen yet — clears itself once you open the strategy. */
+  .agent-new-badge{
+    display:inline-flex; align-items:center; gap:6px; margin-top:6px;
+    font-family:var(--mono); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.04em;
+    color:var(--accent);
+  }
+  .agent-new-dot{ width:7px; height:7px; border-radius:50%; background:var(--accent); animation:zt-alert-pulse 1.6s ease-out infinite; }
+  @keyframes zt-alert-pulse{
+    0%{ box-shadow:0 0 0 0 var(--accent-glow); }
+    70%{ box-shadow:0 0 0 8px rgba(0,0,0,0); }
+    100%{ box-shadow:0 0 0 0 rgba(0,0,0,0); }
+  }
+  @media (prefers-reduced-motion: reduce){ .agent-new-dot{ animation:none; } }
   .agent-toggle{ position:relative; display:inline-block; width:40px; height:22px; flex-shrink:0; }
   .agent-toggle-input{ position:absolute; inset:0; opacity:0; margin:0; cursor:pointer; z-index:1; }
   .agent-toggle-input:disabled{ cursor:not-allowed; }
@@ -175,6 +236,34 @@
 </style>
 </head>
 <body class="zt zt-body">
+  <div class="page-rain" aria-hidden="true">
+    <div class="hero-rain-col"><div class="hero-rain-track" style="animation-duration:7.9s; animation-delay:-2.1s;"><span class="r">4</span><span class="g">1</span><span class="g">4</span><span class="g">8</span><span class="g">3</span><span class="g">0</span><span class="r">7</span><span class="g">1</span><span class="g">7</span><span class="r">8</span><span class="r">4</span><span class="g">1</span><span class="g">4</span><span class="g">8</span><span class="g">3</span><span class="g">0</span><span class="r">7</span><span class="g">1</span><span class="g">7</span><span class="r">8</span></div></div>
+    <div class="hero-rain-col"><div class="hero-rain-track" style="animation-duration:6.4s; animation-delay:-1.8s;"><span class="r">3</span><span class="g">9</span><span class="r">2</span><span class="r">5</span><span class="r">5</span><span class="r">4</span><span class="r">5</span><span class="g">7</span><span class="r">7</span><span class="r">7</span><span class="r">3</span><span class="g">9</span><span class="r">2</span><span class="r">5</span><span class="r">5</span><span class="r">4</span><span class="r">5</span><span class="g">7</span><span class="r">7</span><span class="r">7</span></div></div>
+    <div class="hero-rain-col"><div class="hero-rain-track" style="animation-duration:8.9s; animation-delay:-7.9s;"><span class="g">8</span><span class="g">8</span><span class="g">1</span><span class="g">6</span><span class="r">4</span><span class="r">4</span><span class="g">5</span><span class="g">4</span><span class="g">7</span><span class="g">4</span><span class="g">8</span><span class="g">8</span><span class="g">1</span><span class="g">6</span><span class="r">4</span><span class="r">4</span><span class="g">5</span><span class="g">4</span><span class="g">7</span><span class="g">4</span></div></div>
+    <div class="hero-rain-col"><div class="hero-rain-track" style="animation-duration:7.4s; animation-delay:-0.2s;"><span class="g">7</span><span class="g">8</span><span class="g">9</span><span class="g">6</span><span class="g">0</span><span class="g">6</span><span class="r">2</span><span class="r">0</span><span class="g">0</span><span class="r">7</span><span class="g">7</span><span class="g">8</span><span class="g">9</span><span class="g">6</span><span class="g">0</span><span class="g">6</span><span class="r">2</span><span class="r">0</span><span class="g">0</span><span class="r">7</span></div></div>
+    <div class="hero-rain-col"><div class="hero-rain-track" style="animation-duration:7.9s; animation-delay:-5.9s;"><span class="g">6</span><span class="g">0</span><span class="g">7</span><span class="r">7</span><span class="g">3</span><span class="g">8</span><span class="r">2</span><span class="r">8</span><span class="g">4</span><span class="r">2</span><span class="g">6</span><span class="g">0</span><span class="g">7</span><span class="r">7</span><span class="g">3</span><span class="g">8</span><span class="r">2</span><span class="r">8</span><span class="g">4</span><span class="r">2</span></div></div>
+    <div class="hero-rain-col"><div class="hero-rain-track" style="animation-duration:7.9s; animation-delay:-7.5s;"><span class="r">6</span><span class="r">9</span><span class="g">6</span><span class="g">3</span><span class="g">6</span><span class="r">8</span><span class="r">0</span><span class="g">1</span><span class="g">2</span><span class="r">8</span><span class="r">6</span><span class="r">9</span><span class="g">6</span><span class="g">3</span><span class="g">6</span><span class="r">8</span><span class="r">0</span><span class="g">1</span><span class="g">2</span><span class="r">8</span></div></div>
+    <div class="hero-rain-col"><div class="hero-rain-track" style="animation-duration:10.8s; animation-delay:-5.2s;"><span class="g">1</span><span class="g">8</span><span class="r">8</span><span class="r">7</span><span class="g">4</span><span class="g">6</span><span class="r">2</span><span class="g">6</span><span class="g">0</span><span class="r">7</span><span class="g">1</span><span class="g">8</span><span class="r">8</span><span class="r">7</span><span class="g">4</span><span class="g">6</span><span class="r">2</span><span class="g">6</span><span class="g">0</span><span class="r">7</span></div></div>
+    <div class="hero-rain-col"><div class="hero-rain-track" style="animation-duration:9.9s; animation-delay:-6.5s;"><span class="g">4</span><span class="r">8</span><span class="g">2</span><span class="g">4</span><span class="g">1</span><span class="r">0</span><span class="g">7</span><span class="r">0</span><span class="g">9</span><span class="g">5</span><span class="g">4</span><span class="r">8</span><span class="g">2</span><span class="g">4</span><span class="g">1</span><span class="r">0</span><span class="g">7</span><span class="r">0</span><span class="g">9</span><span class="g">5</span></div></div>
+    <div class="hero-rain-col"><div class="hero-rain-track" style="animation-duration:5.7s; animation-delay:-2.0s;"><span class="g">5</span><span class="g">0</span><span class="r">7</span><span class="g">4</span><span class="g">1</span><span class="r">4</span><span class="g">2</span><span class="r">1</span><span class="g">1</span><span class="g">7</span><span class="g">5</span><span class="g">0</span><span class="r">7</span><span class="g">4</span><span class="g">1</span><span class="r">4</span><span class="g">2</span><span class="r">1</span><span class="g">1</span><span class="g">7</span></div></div>
+    <div class="hero-rain-col"><div class="hero-rain-track" style="animation-duration:9.3s; animation-delay:-3.6s;"><span class="g">1</span><span class="r">9</span><span class="g">0</span><span class="g">1</span><span class="r">5</span><span class="r">9</span><span class="g">1</span><span class="g">8</span><span class="g">5</span><span class="r">1</span><span class="g">1</span><span class="r">9</span><span class="g">0</span><span class="g">1</span><span class="r">5</span><span class="r">9</span><span class="g">1</span><span class="g">8</span><span class="g">5</span><span class="r">1</span></div></div>
+    <div class="hero-rain-col"><div class="hero-rain-track" style="animation-duration:6.4s; animation-delay:-7.1s;"><span class="r">0</span><span class="r">2</span><span class="r">2</span><span class="r">2</span><span class="g">4</span><span class="r">4</span><span class="r">0</span><span class="r">9</span><span class="g">1</span><span class="g">2</span><span class="r">0</span><span class="r">2</span><span class="r">2</span><span class="r">2</span><span class="g">4</span><span class="r">4</span><span class="r">0</span><span class="r">9</span><span class="g">1</span><span class="g">2</span></div></div>
+    <div class="hero-rain-col"><div class="hero-rain-track" style="animation-duration:7.4s; animation-delay:-7.1s;"><span class="r">6</span><span class="g">9</span><span class="r">9</span><span class="r">6</span><span class="r">8</span><span class="r">8</span><span class="g">4</span><span class="g">2</span><span class="r">4</span><span class="g">0</span><span class="r">6</span><span class="g">9</span><span class="r">9</span><span class="r">6</span><span class="r">8</span><span class="r">8</span><span class="g">4</span><span class="g">2</span><span class="r">4</span><span class="g">0</span></div></div>
+    <div class="hero-rain-col"><div class="hero-rain-track" style="animation-duration:10.8s; animation-delay:-4.2s;"><span class="g">8</span><span class="g">5</span><span class="g">0</span><span class="g">6</span><span class="r">2</span><span class="g">6</span><span class="g">5</span><span class="g">4</span><span class="g">2</span><span class="r">5</span><span class="g">8</span><span class="g">5</span><span class="g">0</span><span class="g">6</span><span class="r">2</span><span class="g">6</span><span class="g">5</span><span class="g">4</span><span class="g">2</span><span class="r">5</span></div></div>
+    <div class="hero-rain-col"><div class="hero-rain-track" style="animation-duration:6.3s; animation-delay:-0.1s;"><span class="r">9</span><span class="g">9</span><span class="r">7</span><span class="r">6</span><span class="r">7</span><span class="r">6</span><span class="g">4</span><span class="g">0</span><span class="r">5</span><span class="r">4</span><span class="r">9</span><span class="g">9</span><span class="r">7</span><span class="r">6</span><span class="r">7</span><span class="r">6</span><span class="g">4</span><span class="g">0</span><span class="r">5</span><span class="r">4</span></div></div>
+    <div class="hero-rain-col"><div class="hero-rain-track" style="animation-duration:7.1s; animation-delay:-4.6s;"><span class="r">9</span><span class="g">7</span><span class="r">1</span><span class="g">6</span><span class="r">2</span><span class="g">4</span><span class="r">0</span><span class="g">9</span><span class="r">3</span><span class="g">4</span><span class="r">9</span><span class="g">7</span><span class="r">1</span><span class="g">6</span><span class="r">2</span><span class="g">4</span><span class="r">0</span><span class="g">9</span><span class="r">3</span><span class="g">4</span></div></div>
+    <div class="hero-rain-col"><div class="hero-rain-track" style="animation-duration:5.9s; animation-delay:-1.8s;"><span class="r">8</span><span class="g">8</span><span class="g">0</span><span class="r">9</span><span class="g">8</span><span class="r">2</span><span class="r">1</span><span class="r">4</span><span class="r">1</span><span class="g">9</span><span class="r">8</span><span class="g">8</span><span class="g">0</span><span class="r">9</span><span class="g">8</span><span class="r">2</span><span class="r">1</span><span class="r">4</span><span class="r">1</span><span class="g">9</span></div></div>
+    <div class="hero-rain-col"><div class="hero-rain-track" style="animation-duration:10.6s; animation-delay:-3.6s;"><span class="r">7</span><span class="g">0</span><span class="g">4</span><span class="r">6</span><span class="r">0</span><span class="r">3</span><span class="r">1</span><span class="g">2</span><span class="g">3</span><span class="g">2</span><span class="r">7</span><span class="g">0</span><span class="g">4</span><span class="r">6</span><span class="r">0</span><span class="r">3</span><span class="r">1</span><span class="g">2</span><span class="g">3</span><span class="g">2</span></div></div>
+    <div class="hero-rain-col"><div class="hero-rain-track" style="animation-duration:9.4s; animation-delay:-8.7s;"><span class="r">6</span><span class="r">9</span><span class="r">6</span><span class="g">0</span><span class="g">0</span><span class="r">9</span><span class="r">8</span><span class="g">6</span><span class="g">7</span><span class="g">5</span><span class="r">6</span><span class="r">9</span><span class="r">6</span><span class="g">0</span><span class="g">0</span><span class="r">9</span><span class="r">8</span><span class="g">6</span><span class="g">7</span><span class="g">5</span></div></div>
+    <div class="hero-rain-col"><div class="hero-rain-track" style="animation-duration:6.0s; animation-delay:-3.7s;"><span class="g">2</span><span class="g">1</span><span class="r">2</span><span class="r">1</span><span class="r">6</span><span class="r">3</span><span class="r">8</span><span class="r">9</span><span class="r">3</span><span class="r">4</span><span class="g">2</span><span class="g">1</span><span class="r">2</span><span class="r">1</span><span class="r">6</span><span class="r">3</span><span class="r">8</span><span class="r">9</span><span class="r">3</span><span class="r">4</span></div></div>
+    <div class="hero-rain-col"><div class="hero-rain-track" style="animation-duration:10.9s; animation-delay:-2.0s;"><span class="g">2</span><span class="g">6</span><span class="r">3</span><span class="r">6</span><span class="r">1</span><span class="g">2</span><span class="g">6</span><span class="r">2</span><span class="g">3</span><span class="r">9</span><span class="g">2</span><span class="g">6</span><span class="r">3</span><span class="r">6</span><span class="r">1</span><span class="g">2</span><span class="g">6</span><span class="r">2</span><span class="g">3</span><span class="r">9</span></div></div>
+    <div class="hero-rain-col"><div class="hero-rain-track" style="animation-duration:9.5s; animation-delay:-7.4s;"><span class="g">2</span><span class="r">5</span><span class="g">0</span><span class="g">0</span><span class="g">4</span><span class="g">3</span><span class="g">5</span><span class="r">6</span><span class="g">1</span><span class="g">6</span><span class="g">2</span><span class="r">5</span><span class="g">0</span><span class="g">0</span><span class="g">4</span><span class="g">3</span><span class="g">5</span><span class="r">6</span><span class="g">1</span><span class="g">6</span></div></div>
+    <div class="hero-rain-col"><div class="hero-rain-track" style="animation-duration:9.6s; animation-delay:-3.6s;"><span class="g">1</span><span class="r">5</span><span class="r">1</span><span class="r">5</span><span class="g">2</span><span class="g">2</span><span class="g">8</span><span class="r">9</span><span class="r">9</span><span class="g">8</span><span class="g">1</span><span class="r">5</span><span class="r">1</span><span class="r">5</span><span class="g">2</span><span class="g">2</span><span class="g">8</span><span class="r">9</span><span class="r">9</span><span class="g">8</span></div></div>
+    <div class="hero-rain-col"><div class="hero-rain-track" style="animation-duration:10.4s; animation-delay:-6.8s;"><span class="r">6</span><span class="r">2</span><span class="r">5</span><span class="g">8</span><span class="g">7</span><span class="r">0</span><span class="g">1</span><span class="g">1</span><span class="g">9</span><span class="g">5</span><span class="r">6</span><span class="r">2</span><span class="r">5</span><span class="g">8</span><span class="g">7</span><span class="r">0</span><span class="g">1</span><span class="g">1</span><span class="g">9</span><span class="g">5</span></div></div>
+    <div class="hero-rain-col"><div class="hero-rain-track" style="animation-duration:5.8s; animation-delay:-5.6s;"><span class="r">1</span><span class="r">8</span><span class="r">4</span><span class="r">3</span><span class="r">2</span><span class="g">2</span><span class="r">5</span><span class="g">6</span><span class="g">8</span><span class="r">6</span><span class="r">1</span><span class="r">8</span><span class="r">4</span><span class="r">3</span><span class="r">2</span><span class="g">2</span><span class="r">5</span><span class="g">6</span><span class="g">8</span><span class="r">6</span></div></div>
+    <div class="hero-rain-col"><div class="hero-rain-track" style="animation-duration:8.6s; animation-delay:-5.4s;"><span class="r">5</span><span class="g">1</span><span class="g">2</span><span class="r">1</span><span class="r">4</span><span class="g">5</span><span class="g">5</span><span class="r">9</span><span class="r">7</span><span class="g">9</span><span class="r">5</span><span class="g">1</span><span class="g">2</span><span class="r">1</span><span class="r">4</span><span class="g">5</span><span class="g">5</span><span class="r">9</span><span class="r">7</span><span class="g">9</span></div></div>
+    <div class="hero-rain-col"><div class="hero-rain-track" style="animation-duration:9.1s; animation-delay:-7.3s;"><span class="r">9</span><span class="r">4</span><span class="r">0</span><span class="r">2</span><span class="r">0</span><span class="g">8</span><span class="g">0</span><span class="r">0</span><span class="r">7</span><span class="r">8</span><span class="r">9</span><span class="r">4</span><span class="r">0</span><span class="r">2</span><span class="r">0</span><span class="g">8</span><span class="g">0</span><span class="r">0</span><span class="r">7</span><span class="r">8</span></div></div>
+  </div>
 
 <nav class="site-nav">
   <div class="shell">
@@ -271,6 +360,7 @@
                 <div>
                   <div class="agent-name">Swing Trader</div>
                   <div class="agent-sub" id="agentSub-swing-trader">Loading…</div>
+                  <span class="agent-new-badge" id="agentNew-swing-trader" hidden><span class="agent-new-dot"></span>New alert</span>
                 </div>
                 <label class="agent-toggle">
                   <input type="checkbox" class="agent-toggle-input" id="agentToggle-swing-trader" data-strategy="swing-trader" disabled>
@@ -288,6 +378,7 @@
                 <div>
                   <div class="agent-name">Breakout Rider</div>
                   <div class="agent-sub" id="agentSub-breakout-rider">Loading…</div>
+                  <span class="agent-new-badge" id="agentNew-breakout-rider" hidden><span class="agent-new-dot"></span>New alert</span>
                 </div>
                 <label class="agent-toggle">
                   <input type="checkbox" class="agent-toggle-input" id="agentToggle-breakout-rider" data-strategy="breakout-rider" disabled>
@@ -305,6 +396,7 @@
                 <div>
                   <div class="agent-name">Options Scanner</div>
                   <div class="agent-sub" id="agentSub-options-scanner">Loading…</div>
+                  <span class="agent-new-badge" id="agentNew-options-scanner" hidden><span class="agent-new-dot"></span>New alert</span>
                 </div>
                 <label class="agent-toggle">
                   <input type="checkbox" class="agent-toggle-input" id="agentToggle-options-scanner" data-strategy="options-scanner" disabled>
@@ -582,6 +674,52 @@
     wrap.innerHTML = rows.join('');
   }
 
+  // Remembers, per-browser, the last alert id each strategy showed you. When
+  // the newest one doesn't match, that's a new alert since your last visit —
+  // pulse the badge on that card until you open the strategy (or the toggle,
+  // as a secondary "I've seen this" signal).
+  var latestAlertIds = {};
+  function seenKey(id){ return 'zelosSeenAlert-' + id; }
+  function markStrategySeen(id){
+    var badge = document.getElementById('agentNew-' + id);
+    if (badge) badge.hidden = true;
+    if (!latestAlertIds[id]) return;
+    try { localStorage.setItem(seenKey(id), latestAlertIds[id]); } catch (e) { /* ignore */ }
+  }
+  function checkNewAlerts(byStrategy){
+    STRATEGY_ORDER.forEach(function(id){
+      var s = byStrategy[id];
+      var badge = document.getElementById('agentNew-' + id);
+      if (!badge) return;
+      if (!s || !s.latestId) { badge.hidden = true; return; }
+      latestAlertIds[id] = s.latestId;
+      var seen = null;
+      try { seen = localStorage.getItem(seenKey(id)); } catch (e) { /* ignore */ }
+      if (seen === null) {
+        // first time this browser has ever looked — set the baseline quietly,
+        // don't pulse for alerts that predate the visitor knowing this exists.
+        try { localStorage.setItem(seenKey(id), s.latestId); } catch (e) { /* ignore */ }
+        badge.hidden = true;
+      } else {
+        badge.hidden = (seen === s.latestId);
+      }
+    });
+  }
+  document.querySelectorAll('.agent-open').forEach(function(a){
+    a.addEventListener('click', function(){
+      var card = a.closest('.agent-card');
+      if (card && card.dataset.strategy) markStrategySeen(card.dataset.strategy);
+    });
+  });
+
+  // Keeps each card's green "this one's on" edge in sync with its toggle.
+  function syncAgentCardBorder(id){
+    var input = document.getElementById('agentToggle-' + id);
+    var card = document.querySelector('.agent-card[data-strategy="' + id + '"]');
+    if (!input || !card) return;
+    card.classList.toggle('is-on', input.checked);
+  }
+
   function renderActiveTrades(openAlerts){
     var block = document.getElementById('activeTradesBlock');
     if (!openAlerts.length) {
@@ -640,17 +778,18 @@
 
       // per-strategy breakdown, from the same 30-alert window
       var byStrategy = {};
-      STRATEGY_ORDER.forEach(function(id){ byStrategy[id] = { count:0, openCount:0, latest:null }; });
+      STRATEGY_ORDER.forEach(function(id){ byStrategy[id] = { count:0, openCount:0, latest:null, latestId:null }; });
       all.forEach(function(item){
         var a = item.data;
         var s = byStrategy[a.strategy];
         if (!s) return;
         s.count++;
         if (a.status === 'qualified') s.openCount++;
-        if (!s.latest) s.latest = a;
+        if (!s.latest) { s.latest = a; s.latestId = item.id; }
       });
       renderAgentPerformance(byStrategy);
       renderPulseTable(byStrategy);
+      checkNewAlerts(byStrategy);
 
       var openAlerts = all.filter(function(item){ return item.data.status === 'qualified'; });
       renderActiveTrades(openAlerts);
@@ -768,15 +907,94 @@
     });
   }
 
+  // ---- XP levels: badges you climb into as XP adds up. Purely a recognition
+  // ladder for now — level 0 has no badge, each rung after that unlocks the
+  // next one. (Whether specific levels should also unlock a perk — a skill
+  // preview, a discount, a cosmetic — is a product call for later; this just
+  // builds the badge/level plumbing so that's a config change, not new code.)
+  var XP_LEVELS = [
+    { level:0, xp:0,    name:'Getting started', badge:'' },
+    { level:1, xp:10,   name:'Bronze',          badge:'🥉' },
+    { level:2, xp:50,   name:'Silver',          badge:'🥈' },
+    { level:3, xp:150,  name:'Gold',            badge:'🥇' },
+    { level:4, xp:400,  name:'Platinum',        badge:'🏆' },
+    { level:5, xp:1000, name:'Diamond',         badge:'💎' }
+  ];
+  function levelForXp(xp){
+    var current = XP_LEVELS[0];
+    for (var i = 0; i < XP_LEVELS.length; i++) { if (xp >= XP_LEVELS[i].xp) current = XP_LEVELS[i]; }
+    return current;
+  }
+  function nextLevelForXp(xp){
+    for (var i = 0; i < XP_LEVELS.length; i++) { if (XP_LEVELS[i].xp > xp) return XP_LEVELS[i]; }
+    return null;
+  }
+
+  // ---- toasts: a small "you gained XP" / "you leveled up" popup, bottom-right ----
+  function toastStack(){
+    var stack = document.getElementById('zelosToastStack');
+    if (!stack) {
+      stack = document.createElement('div');
+      stack.id = 'zelosToastStack';
+      stack.className = 'zelos-toast-stack';
+      document.body.appendChild(stack);
+    }
+    return stack;
+  }
+  function showToast(opts){
+    var el = document.createElement('div');
+    el.className = 'zelos-toast' + (opts.isLevel ? ' is-level' : '');
+    el.innerHTML =
+      '<span class="zelos-toast-icon">' + (opts.icon || '⚡') + '</span>' +
+      '<span><span class="zelos-toast-title">' + opts.title + '</span>' +
+      (opts.sub ? '<span class="zelos-toast-sub">' + opts.sub + '</span>' : '') + '</span>';
+    toastStack().appendChild(el);
+    setTimeout(function(){ el.remove(); }, 4200);
+  }
+
+  // Fires only on a REAL change while this tab is watching — the first
+  // snapshot after sign-in just sets the baseline so you don't get a popup
+  // for XP you already had before you opened the dashboard.
+  var lastKnownXp = null;
+  function handleXpChange(xp){
+    if (lastKnownXp === null) { lastKnownXp = xp; return; }
+    if (xp === lastKnownXp) return;
+    if (xp > lastKnownXp) {
+      var prevLevel = levelForXp(lastKnownXp);
+      var newLevel = levelForXp(xp);
+      var gained = xp - lastKnownXp;
+      if (newLevel.level > prevLevel.level) {
+        showToast({
+          icon: newLevel.badge || '🌟', isLevel: true,
+          title: 'Level up — ' + newLevel.name + '!',
+          sub: '+' + gained + ' XP · ' + xp + ' XP total'
+        });
+      } else {
+        showToast({ icon: '⚡', title: '+' + gained + ' XP', sub: xp + ' XP total' });
+      }
+    }
+    lastKnownXp = xp;
+  }
+
   function renderProgress(user, data){
     document.getElementById('progressCard').hidden = false;
     var xp = data.xp || 0;
     var streak = data.streakDays || 0;
+    var level = levelForXp(xp);
+    var next = nextLevelForXp(xp);
+    var pct = next ? Math.max(4, Math.min(100, Math.round(((xp - level.xp) / (next.xp - level.xp)) * 100))) : 100;
+    var nextTxt = next ? ((next.xp - xp) + ' XP to ' + next.badge + ' ' + next.name) : 'Top level reached';
     document.getElementById('progressBlock').innerHTML =
       '<div class="progress-stats">' +
         '<div class="stat"><span class="num">' + xp + '</span><span class="lbl">XP</span></div>' +
         '<div class="stat"><span class="num">' + streak + '</span><span class="lbl">Day streak</span></div>' +
       '</div>' +
+      '<div class="level-row">' +
+        '<span class="level-badge">' + (level.badge || '•') + '</span>' +
+        '<span class="level-name">' + level.name + '</span>' +
+      '</div>' +
+      '<div class="level-bar"><div class="level-bar-fill" style="width:' + pct + '%;"></div></div>' +
+      '<div class="level-next">' + nextTxt + '</div>' +
       '<div class="progress-note">Streaks track opening at least one alert each day. XP also comes from checking in and playing Arcade games — small amounts, never required.</div>';
   }
 
@@ -841,6 +1059,7 @@
       if (!input) return;
       input.disabled = false;
       input.checked = active ? (active.indexOf(id) !== -1) : true;
+      syncAgentCardBorder(id);
     });
   }
 
@@ -851,6 +1070,7 @@
       if (!input) return;
       input.disabled = true;
       input.checked = true;
+      syncAgentCardBorder(id);
     });
   }
 
@@ -872,7 +1092,8 @@
 
   document.querySelectorAll('.agent-toggle-input').forEach(function(input){
     input.addEventListener('change', function(){
-      if (!currentUser) { input.checked = true; return; }
+      if (!currentUser) { input.checked = true; syncAgentCardBorder(input.dataset.strategy); return; }
+      syncAgentCardBorder(input.dataset.strategy);
       setAgentActive(currentUser, input.dataset.strategy, input.checked);
     });
   });
@@ -895,11 +1116,13 @@
   }
 
   function watchUserDoc(user){
+    lastKnownXp = null; // re-baseline so a fresh sign-in never pops a stale XP toast
     ensureUserDoc(user).then(function(){
       return claimPendingOwnership(user);
     }).then(function(){
       userDocRef(user.uid).onSnapshot(function(doc){
         var data = doc.data() || {};
+        handleXpChange(data.xp || 0);
         renderProgress(user, data);
         renderWatchlist(user, data);
         renderSkills(user, data);
