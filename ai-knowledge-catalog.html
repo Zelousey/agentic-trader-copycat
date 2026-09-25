@@ -20,7 +20,7 @@
 <link rel="apple-touch-icon" href="icons/icon-180.png">
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-title" content="Zelos">
-<meta name="theme-color" content="#080b13">
+<meta name="theme-color" content="#0c0d10">
 <meta name="description" content="How Zelos actually thinks: the shared rule-based engine behind every strategy, how a setup gets scored, a side-by-side comparison of Swing Trader, Breakout Rider, and Options Scanner, and a plain-English glossary of alert terminology.">
 <link rel="canonical" href="https://agentictrading.info/ai-knowledge-catalog.html">
 <meta property="og:type" content="website">
@@ -36,7 +36,7 @@
 <meta name="twitter:description" content="How Zelos actually thinks: the shared rule-based engine behind every strategy, how a setup gets scored, a strategy comparison, and a plain-English glossary of alert terminology.">
 <meta name="twitter:image" content="https://agentictrading.info/og-image.png">
 <link rel="stylesheet" href="zelos-theme.css">
-<script>(function(){try{if(localStorage.getItem('zelosTheme')==='black')document.documentElement.setAttribute('data-theme','black');}catch(e){}})();</script>
+<script>(function(){try{if(localStorage.getItem('zelosTheme')!=='brown')document.documentElement.setAttribute('data-theme','black');}catch(e){}})();</script>
 <style>
   :root{ color-scheme: dark; }
   *{ box-sizing:border-box; }
@@ -110,12 +110,57 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "AI Knowledge Catalog — Zelos",
-  "url": "https://agentictrading.info/ai-knowledge-catalog.html",
-  "image": "https://agentictrading.info/og-image.png",
-  "description": "How Zelos actually thinks: the shared rule-based engine behind every strategy, how a setup gets scored, a strategy comparison, and a plain-English glossary of alert terminology.",
-  "isPartOf": { "@type": "WebSite", "name": "Zelos", "url": "https://agentictrading.info/" }
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://agentictrading.info/ai-knowledge-catalog.html#webpage",
+      "name": "AI Knowledge Catalog — Zelos",
+      "url": "https://agentictrading.info/ai-knowledge-catalog.html",
+      "image": "https://agentictrading.info/og-image.png",
+      "description": "How Zelos actually thinks: the shared rule-based engine behind every strategy, how a setup gets scored, a strategy comparison, and a plain-English glossary of alert terminology.",
+      "isPartOf": { "@type": "WebSite", "name": "Zelos", "url": "https://agentictrading.info/" }
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://agentictrading.info/ai-knowledge-catalog.html#what-is-agentic-trading",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is agentic trading?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Agentic trading is when a software agent applies a fixed set of trading rules on its own initiative — screening the market, scoring candidate setups, and deciding whether to publish an alert — without a person re-running the analysis by hand each session. The agent decides what qualifies; a person still decides whether to act on it. It is distinct from automated trade execution, which places orders on its own — an agentic trading system can stop at the decision and the write-up, never the order itself. Zelos is a rule-based agentic trading system: the same scoring engine runs every session, unattended, and either publishes a qualifying setup with its full reasoning or says plainly that nothing cleared the bar."
+          }
+        }
+      ]
+    },
+    {
+      "@type": "DefinedTermSet",
+      "@id": "https://agentictrading.info/ai-knowledge-catalog.html#glossary",
+      "name": "Zelos alert & agentic trading glossary",
+      "description": "Plain-English definitions of the terms used on Zelos alert pages and in describing how its agentic trading engine works.",
+      "url": "https://agentictrading.info/ai-knowledge-catalog.html#glossary",
+      "hasDefinedTerm": [
+        { "@type": "DefinedTerm", "name": "Agentic trading", "description": "A software agent applying a fixed set of trading rules on its own initiative — screening the market, scoring setups, and deciding whether to publish an alert — without a person re-running the analysis each session, and without placing trades itself." },
+        { "@type": "DefinedTerm", "name": "Entry", "description": "The reference price a setup was identified at — not an order Zelos places, just where the pattern qualified." },
+        { "@type": "DefinedTerm", "name": "Stop", "description": "The price where the setup's thesis is considered wrong. Used to size a position's risk, never placed as an order automatically." },
+        { "@type": "DefinedTerm", "name": "Target 1 / Target 2", "description": "Reference levels where the reward side of the trade would likely be realized — the first and, if relevant, a further objective." },
+        { "@type": "DefinedTerm", "name": "Risk / reward per share", "description": "The dollar distance from entry to stop (risk) and from entry to target (reward), per share — the two numbers a reward:risk ratio is built from." },
+        { "@type": "DefinedTerm", "name": "Reward : risk ratio", "description": "Reward per share divided by risk per share. A 3:1 ratio means the target is three times as far away as the stop, in the trade's favor." },
+        { "@type": "DefinedTerm", "name": "Support / resistance", "description": "A price level a stock has had trouble falling below (support) or rising above (resistance) recently — the \"floor\" or \"ceiling\" a setup reacts to." },
+        { "@type": "DefinedTerm", "name": "Pullback", "description": "A short pause or dip within a larger uptrend, without breaking the trend itself — what Swing Trader is built to find." },
+        { "@type": "DefinedTerm", "name": "Breakout / retest", "description": "A breakout is a move through a resistance level; a retest is the price coming back to prove that level now holds as support — what Breakout Rider is built to find." },
+        { "@type": "DefinedTerm", "name": "Relative strength", "description": "How a stock is performing compared to the broader market or its peers right now, independent of its own chart shape." },
+        { "@type": "DefinedTerm", "name": "Score / the bar", "description": "The 0–80 number a setup is rated on across the five scoring factors, and the minimum (typically ~60) it has to clear to qualify for an alert." },
+        { "@type": "DefinedTerm", "name": "Market regime", "description": "Today's classification of the broad market as trending up, trending down, or sideways — it changes how strict the scoring bar is that session." },
+        { "@type": "DefinedTerm", "name": "DTE (days to expiration)", "description": "How many days remain until an options contract expires. Options Scanner targets roughly 30–45 DTE — enough runway for a move to play out." },
+        { "@type": "DefinedTerm", "name": "OTM (out of the money)", "description": "An option whose strike price hasn't yet been reached by the underlying stock. \"1 OTM\" means roughly one strike beyond the current price." },
+        { "@type": "DefinedTerm", "name": "Long call / long put", "description": "Buying a call profits if the stock rises; buying a put profits if it falls. \"Long\" means bought outright — the only structure Options Scanner ever uses." },
+        { "@type": "DefinedTerm", "name": "\"No trade today\"", "description": "The outcome on any day nothing clears the bar. It's the most common result by design — the bar exists to be missed most sessions." },
+        { "@type": "DefinedTerm", "name": "Backtest vs. live track record", "description": "A backtest simulates a strategy on past data; a live track record is what actually published in real time. Zelos is upfront about which each strategy currently has." }
+      ]
+    }
+  ]
 }
 </script>
 </head>
@@ -177,6 +222,7 @@
       <a href="leaderboard.html">Leaderboard</a>
       <a href="arcade.html">Arcade</a>
       <a href="alert-history.html">Alerts</a>
+      <a href="learn/index.html">Learn</a>
       <a href="ai-knowledge-catalog.html">Knowledge</a>
       <a href="index.html#why-zelos">About</a>
     </div>
@@ -193,6 +239,15 @@
       <a class="btn" href="#glossary">Jump to the glossary</a>
     </div>
     <div class="cta-note" style="margin-top:16px;">Rule-based, not a black box &middot; the same logic explained here runs behind every alert</div>
+  </div>
+</section>
+
+<section class="section-tight" id="what-is-agentic-trading">
+  <div class="shell-narrow">
+    <div class="eyebrow">What is agentic trading?</div>
+    <h2 style="font-size:1.5rem; margin-top:8px;">Agentic trading, in plain terms</h2>
+    <p style="margin-top:14px; color:var(--ink-2); max-width:62ch; font-size:1.02rem; line-height:1.6;"><b>Agentic trading is when a software agent applies a fixed set of trading rules on its own initiative &mdash; screening the market, scoring candidate setups, and deciding whether to publish an alert &mdash; without a person re-running the analysis by hand each session.</b> The agent decides what qualifies; a person still decides whether to act on it. It's distinct from automated trade execution, which places orders on its own &mdash; an agentic trading system can (and, in Zelos's case, does) stop at the decision and the write-up, never the order itself.</p>
+    <p style="margin-top:12px; color:var(--ink-2); max-width:62ch; font-size:1.02rem; line-height:1.6;">Zelos is a rule-based agentic trading system: the same scoring engine described below runs every session, unattended, and either publishes a qualifying setup with its full reasoning or says plainly that nothing cleared the bar. See <a href="#engine" style="color:var(--accent);">how the engine works</a> for the exact steps, or the <a href="#glossary" style="color:var(--accent);">glossary</a> for the terminology it uses.</p>
   </div>
 </section>
 

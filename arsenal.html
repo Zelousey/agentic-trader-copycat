@@ -20,11 +20,11 @@
 <link rel="apple-touch-icon" href="icons/icon-180.png">
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-title" content="Zelos">
-<meta name="theme-color" content="#4d3720">
+<meta name="theme-color" content="#0c0d10">
 <meta name="description" content="Every Zelos skill in one place — what each one does, what it costs, and whether you've unlocked it yet.">
 <link rel="canonical" href="https://agentictrading.info/arsenal.html">
 <link rel="stylesheet" href="zelos-theme.css">
-<script>(function(){try{if(localStorage.getItem('zelosTheme')==='black')document.documentElement.setAttribute('data-theme','black');}catch(e){}})();</script>
+<script>(function(){try{if(localStorage.getItem('zelosTheme')!=='brown')document.documentElement.setAttribute('data-theme','black');}catch(e){}})();</script>
 <style>
   :root{ color-scheme: dark; }
   *{ box-sizing:border-box; }
@@ -153,7 +153,7 @@
 
       <a class="nav-link" href="arcade.html">Arcade</a>
       <a class="nav-link" href="alert-history.html">Alerts</a>
-      <a class="nav-link" href="ai-knowledge-catalog.html">Knowledge</a>
+      <a class="nav-link" href="learn/index.html">Learn</a>
       <a class="nav-link" href="index.html#why-zelos">About</a>
     </div>
 
@@ -179,6 +179,7 @@
       <a href="leaderboard.html">Leaderboard</a>
       <a href="arcade.html">Arcade</a>
       <a href="alert-history.html">Alerts</a>
+      <a href="learn/index.html">Learn</a>
       <a href="ai-knowledge-catalog.html">Knowledge</a>
       <a href="index.html#why-zelos">About</a>
     </div>
@@ -363,6 +364,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script src="zelos-mood.js"></script>
+<script src="zelos-xp.js"></script>
 <script>
 (function(){
   var SKILL_IDS = ['swing-trader', 'breakout-rider', 'options-scanner'];
@@ -529,6 +531,7 @@
         renderSignedOut();
         document.getElementById('markOwnedBlock').hidden = true;
         setProgress(0, SKILL_IDS.length, 'Sign in to track which skills you\'ve unlocked.');
+        if (user && window.ZelosXP) ZelosXP.award('daily-checkin');
         return;
       }
       renderSignedIn(user);
@@ -536,6 +539,7 @@
         var data = doc.data() || {};
         applyOwnership(data.ownedSkills || []);
       });
+      if (window.ZelosXP) ZelosXP.award('daily-checkin');
     });
   } else {
     renderSignedOut();

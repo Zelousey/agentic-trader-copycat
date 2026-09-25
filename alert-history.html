@@ -20,10 +20,10 @@
 <link rel="apple-touch-icon" href="icons/icon-180.png">
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-title" content="Zelos">
-<meta name="theme-color" content="#4d3720">
+<meta name="theme-color" content="#0c0d10">
 <meta name="description" content="Every Zelos alert, shown the same way whether it worked out or not.">
 <link rel="stylesheet" href="zelos-theme.css">
-<script>(function(){try{if(localStorage.getItem('zelosTheme')==='black')document.documentElement.setAttribute('data-theme','black');}catch(e){}})();</script>
+<script>(function(){try{if(localStorage.getItem('zelosTheme')!=='brown')document.documentElement.setAttribute('data-theme','black');}catch(e){}})();</script>
 <style>
   :root{ color-scheme: dark; }
   *{ box-sizing:border-box; }
@@ -70,6 +70,25 @@
 
   .empty{ color:var(--muted); font-size:0.88rem; padding:20px 18px; }
   .fine{ font-size:0.72rem; color:var(--muted); line-height:1.5; margin-top:16px; }
+
+  /* ---- win/loss record summary ---- */
+  .record{
+    display:flex; align-items:center; gap:18px; flex-wrap:wrap;
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:14px 18px; margin-top:18px;
+  }
+  .record-stat{ display:flex; flex-direction:column; gap:2px; }
+  .record-stat .n{ font-family:var(--mono); font-weight:700; font-size:1.15rem; }
+  .record-stat .n.wins{ color:var(--accent); }
+  .record-stat .n.losses{ color:var(--danger); }
+  .record-stat .k{ font-family:var(--mono); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); }
+  .record-bar{
+    flex:1 1 160px; min-width:120px; height:8px; border-radius:4px; overflow:hidden;
+    display:flex; background-image:repeating-linear-gradient(90deg, var(--border-soft) 0 4px, transparent 4px 8px);
+  }
+  .record-bar-fill{ height:100%; background:var(--accent); }
+  .record-bar-fill.losses{ background:var(--danger); }
+  .record-note{ font-size:0.74rem; color:var(--muted); flex-basis:100%; }
 </style>
 </head>
 <body class="zt zt-body">
@@ -104,7 +123,7 @@
 
       <a class="nav-link" href="arcade.html">Arcade</a>
       <a class="nav-link" href="alert-history.html">Alerts</a>
-      <a class="nav-link" href="ai-knowledge-catalog.html">Knowledge</a>
+      <a class="nav-link" href="learn/index.html">Learn</a>
       <a class="nav-link" href="index.html#why-zelos">About</a>
     </div>
 
@@ -130,6 +149,7 @@
       <a href="leaderboard.html">Leaderboard</a>
       <a href="arcade.html">Arcade</a>
       <a href="alert-history.html">Alerts</a>
+      <a href="learn/index.html">Learn</a>
       <a href="ai-knowledge-catalog.html">Knowledge</a>
       <a href="index.html#why-zelos">About</a>
     </div>
@@ -157,6 +177,8 @@
       <button data-strategy="breakout-rider" type="button">Breakout Rider</button>
       <button data-strategy="options-scanner" type="button">Options Scanner</button>
     </div>
+
+    <div class="record" id="record" hidden></div>
 
     <div class="card"><div id="list"><div class="empty">Loading…</div></div></div>
     <p class="fine">Past alerts are informational only and not a guarantee of future results. Rule-based scans, the same for every subscriber — not personalized advice. Not a registered investment adviser.</p>
@@ -386,9 +408,43 @@
 
   var allDocs = [];
 
+  // Win/loss record — computed straight from whatever's currently loaded and
+  // filtered, so it always matches exactly what's listed below it. Expired
+  // and no-trade alerts are shown for context but deliberately left out of
+  // the win-rate math itself (a "win rate" that counted expired trades as
+  // losses, or ignored them, would both be misleading either way — the
+  // honest thing is to only score the trades that actually resolved).
+  function renderRecord(filtered){
+    var el = document.getElementById('record');
+    var wins = 0, losses = 0, expired = 0, noTrade = 0, open = 0;
+    filtered.forEach(function(item){
+      var result = item.data.outcome && item.data.outcome.result;
+      if (result === 'hit-target') wins++;
+      else if (result === 'stopped-out') losses++;
+      else if (result === 'expired') expired++;
+      else if (result === 'no-trade') noTrade++;
+      else open++; // includes status !== 'qualified' with no outcome yet, and result 'open'
+    });
+    var decided = wins + losses;
+    if (!decided && !open) { el.hidden = true; return; }
+    el.hidden = false;
+    var winPct = decided ? Math.round((wins / decided) * 100) : 0;
+    el.innerHTML =
+      '<div class="record-stat"><span class="n wins">' + wins + '</span><span class="k">Hit target</span></div>' +
+      '<div class="record-stat"><span class="n losses">' + losses + '</span><span class="k">Stopped out</span></div>' +
+      '<div class="record-stat"><span class="n">' + open + '</span><span class="k">Still open</span></div>' +
+      '<div class="record-bar">' +
+        (decided ? '<div class="record-bar-fill" style="width:' + (wins / decided * 100) + '%"></div>' +
+                   '<div class="record-bar-fill losses" style="width:' + (losses / decided * 100) + '%"></div>' : '') +
+      '</div>' +
+      '<div class="record-stat"><span class="n">' + (decided ? winPct + '%' : '—') + '</span><span class="k">Win rate (closed only)</span></div>' +
+      '<div class="record-note">Win rate excludes ' + expired + ' expired and ' + noTrade + ' no-trade alert' + ((expired + noTrade) === 1 ? '' : 's') + ' — informational only, not a guarantee of future results.</div>';
+  }
+
   function render(strategyFilter){
     var list = document.getElementById('list');
     var filtered = strategyFilter ? allDocs.filter(function(d){ return d.data.strategy === strategyFilter; }) : allDocs;
+    renderRecord(filtered);
     if (!filtered.length) { list.innerHTML = '<div class="empty">No alerts here yet.</div>'; return; }
     list.innerHTML = filtered.map(function(item){
       var a = item.data;

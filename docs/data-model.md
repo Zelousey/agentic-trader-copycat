@@ -34,12 +34,33 @@ no login required, so a shared link always opens straight to the full analysis.
   technicals: { rsi: 48, sma20: 27.10, sma50: 26.40, volumeVsAvg: "0.8x" },
   riskNotes: "Earnings in 9 days — position sized/held with that in mind.",
 
+  // OPTIONAL: what the scan looked at, for the public daily scan page
+  // (scan/YYYY-MM-DD.html, built by scripts/build_scan_pages.py). Every field
+  // is optional; the page simply leaves out sections it has no data for.
+  scanStats: {
+    scanned: 3120,                 // stocks in the universe that day
+    passedFilters: 41,             // survived the hard filters
+    rejected: [{ ticker: "XYZ", reason: "Below a falling 50-day average" }],
+    qualified: [{ ticker: "PFE", score: 59, setup: "Pullback" }]
+  },
+
   // filled in later by a follow-up job that checks what actually happened —
   // this is what makes alert history transparent instead of cherry-picked
   outcome: null | {
     result: "hit-target" | "stopped-out" | "open" | "expired" | "no-trade",
     closedAt: <timestamp>,
     exitPrice: 29.10,
+    // only ever meaningful when result is "hit-target" — null/absent otherwise.
+    // true = also ran to target2 before falling back to breakeven; false = gave
+    // the runner back; null = still running, not resolved either way yet. See
+    // docs/buffer-automation.md — this is the one and only trigger for the
+    // Buffer win-announce auto-post.
+    target2Hit: true | false | null,
+    target2ResolvedAt: <timestamp> | null,
+    // set once a win-announce post about THIS alert has actually gone out,
+    // so the daily Buffer job never announces the same win twice.
+    target2Announced: true | undefined,
+    target2AnnouncedAt: <timestamp> | undefined,
     notes: "Hit target 1 two sessions later."
   }
 }
@@ -79,10 +100,28 @@ One doc per signed-in person. Only that person can read or write it.
 System-written log entries behind "Recent activity" on My Zelos (xp earned,
 streak milestones, watchlist adds). Not user-editable.
 
-## Known gap (not built yet)
+## How `ownedSkills` gets set
 
-`ownedSkills` today has no automatic link to a real Gumroad purchase — there's
-no webhook wiring Gumroad sales into Firestore yet. Until that exists, treat
-`ownedSkills` as manually set (e.g. Nate flips it after confirming a sale, or a
-person self-marks a skill "owned" after buying). Flagged as a follow-up, not
-part of the current alerts/dashboard build.
+Automatic: Gumroad's account-wide Ping webhook calls `gumroad_ping`
+(`functions/main.py`) on every sale, which records the purchase in
+`pendingOwnership/{email}` and applies it to `users/{uid}.ownedSkills`
+immediately if that email already has an account. See
+`docs/deploying-functions.md` for wiring up the webhook itself.
+
+Manual fallback, still available: a signed-in person can self-mark a skill
+"owned" from the Arsenal page (the "Mark ... as unlocked" links that appear
+next to anything still showing as locked) — useful if a sale happened before
+they had an account, before the webhook was wired up, or the automatic path
+ever misses one.
+
+## How `outcome` gets filled in
+
+Not written by anything above — see `docs/firestore-alerts-setup.md` for the
+outcome-checking job (`scripts/check_alert_outcomes.py` decides what
+happened, `update_alert_outcomes` in `functions/main.py` writes it) that
+fills this in once a published alert's stop or target is actually reached.
+
+`target2Announced`/`target2AnnouncedAt` are the one exception — those are
+written by `post_to_buffer` itself (not the outcome checker) right after a
+win-announce post about that alert actually goes out. See
+`docs/buffer-automation.md`.

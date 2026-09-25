@@ -20,7 +20,7 @@
 <link rel="apple-touch-icon" href="icons/icon-180.png">
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-title" content="Zelos">
-<meta name="theme-color" content="#080b13">
+<meta name="theme-color" content="#0c0d10">
 <meta name="description" content="Zelos is a catalog of rule-based trade-alert pages — published research, general information, the same for every subscriber. No account, no connection, nothing trades.">
 <link rel="canonical" href="https://agentictrading.info/">
 <meta property="og:type" content="website">
@@ -36,7 +36,7 @@
 <meta name="twitter:description" content="A catalog of rule-based trade-alert pages — published research, general information, the same for every subscriber. No account, no connection, nothing trades.">
 <meta name="twitter:image" content="https://agentictrading.info/og-image.png">
 <link rel="stylesheet" href="zelos-theme.css">
-<script>(function(){try{if(localStorage.getItem('zelosTheme')==='black')document.documentElement.setAttribute('data-theme','black');}catch(e){}})();</script>
+<script>(function(){try{if(localStorage.getItem('zelosTheme')!=='brown')document.documentElement.setAttribute('data-theme','black');}catch(e){}})();</script>
 <style>
   :root{ color-scheme: dark; }
   *{ box-sizing:border-box; }
@@ -86,6 +86,28 @@
   ]
 }
 </script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "Organization",
+ "name": "Zelos",
+ "url": "https://agentictrading.info/",
+ "logo": "https://agentictrading.info/icons/icon-512.png",
+ "description": "Zelos publishes rule-based, AI-run stock scans and trade alerts: general information, the same for every reader. It never connects to brokerage accounts or places trades."
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "WebSite",
+ "name": "Zelos",
+ "url": "https://agentictrading.info/",
+ "publisher": {
+  "@type": "Organization",
+  "name": "Zelos"
+ }
+}
+</script>
 </head>
 <body class="zt zt-body">
 
@@ -122,7 +144,7 @@
       <a class="nav-link" href="arcade.html">Arcade</a>
 
       <a class="nav-link" href="alert-history.html">Alerts</a>
-      <a class="nav-link" href="ai-knowledge-catalog.html">Knowledge</a>
+      <a class="nav-link" href="learn/index.html">Learn</a>
       <a class="nav-link" href="#why-zelos">About</a>
     </div>
 
@@ -150,6 +172,7 @@
       <a href="leaderboard.html">Leaderboard</a>
       <a href="arcade.html">Arcade</a>
       <a href="alert-history.html">Alerts</a>
+      <a href="learn/index.html">Learn</a>
       <a href="ai-knowledge-catalog.html">Knowledge</a>
       <a href="#why-zelos">About</a>
     </div>
@@ -200,11 +223,11 @@
     <div class="hero-visual">
       <div class="zmark is-globe">
         <div class="zmark-glow"></div>
-        <div class="zmark-label"><span class="dot"></span>Global Markets &middot; live</div>
+        <div class="zmark-label"><span class="dot"></span><span id="heroGlobeLabel">Global exchanges</span></div>
         <div class="globe-wrap" id="heroGlobe"></div>
-        <div class="zmark-chip c1"><span class="up">NVDA +2.3%</span></div>
-        <div class="zmark-chip c2">Scanning 3,000+ setups</div>
-        <div class="zmark-chip c3">Alert published 9:41 ET</div>
+        <div class="zmark-chip c1" id="heroNyse">NYSE &middot; checking hours…</div>
+        <div class="zmark-chip c2">Every setup scored out of 80</div>
+        <a class="zmark-chip c3" href="alert-history.html" style="text-decoration:none; color:inherit;">Every outcome tracked &rarr;</a>
       </div>
     </div>
   </div>
@@ -279,25 +302,53 @@
             <span style="font-family:var(--mono); font-size:0.76rem; color:var(--muted);">In development &mdash; no launch date promised</span>
           </div>
           <div class="upcoming-row">
-            <div class="upcoming-card">
-              <div class="upcoming-icon">ED</div>
+            <div class="upcoming-card" data-strategy-id="earnings-drift">
+              <div class="upcoming-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V11"/><path d="M9.5 19V6"/><path d="M15 19V13"/><path d="M15 13 L20.5 7.5"/><path d="M16.5 7.5H20.5V11.5"/></svg></div>
               <h4>Earnings Drift</h4>
               <p>Looks to ride the days after a strong earnings beat, once the initial pop settles.</p>
+              <div class="upcoming-vote">
+                <div class="upcoming-vote-row">
+                  <span class="upcoming-vote-count" data-vote-count>0 votes</span>
+                  <button class="upcoming-vote-btn" type="button" data-vote-btn>Vote</button>
+                </div>
+                <div class="upcoming-vote-track"><div class="upcoming-vote-fill" data-vote-fill></div></div>
+              </div>
             </div>
-            <div class="upcoming-card">
-              <div class="upcoming-icon">DC</div>
+            <div class="upcoming-card" data-strategy-id="dip-catcher">
+              <div class="upcoming-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="M7.5 10.5 12 15l4.5-4.5"/><path d="M4.5 19h15"/></svg></div>
               <h4>Dip Catcher</h4>
               <p>Watches for short, sharp pullbacks in otherwise strong stocks &mdash; sized down on purpose.</p>
+              <div class="upcoming-vote">
+                <div class="upcoming-vote-row">
+                  <span class="upcoming-vote-count" data-vote-count>0 votes</span>
+                  <button class="upcoming-vote-btn" type="button" data-vote-btn>Vote</button>
+                </div>
+                <div class="upcoming-vote-track"><div class="upcoming-vote-fill" data-vote-fill></div></div>
+              </div>
             </div>
-            <div class="upcoming-card">
-              <div class="upcoming-icon">RR</div>
+            <div class="upcoming-card" data-strategy-id="range-runner">
+              <div class="upcoming-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16" stroke-dasharray="1.8 3.2"/><path d="M4 17h16" stroke-dasharray="1.8 3.2"/><path d="M6 7l4 10 4-10 4 10"/></svg></div>
               <h4>Range Runner</h4>
               <p>An intraday approach off the opening range that's flat by the close, on purpose.</p>
+              <div class="upcoming-vote">
+                <div class="upcoming-vote-row">
+                  <span class="upcoming-vote-count" data-vote-count>0 votes</span>
+                  <button class="upcoming-vote-btn" type="button" data-vote-btn>Vote</button>
+                </div>
+                <div class="upcoming-vote-track"><div class="upcoming-vote-fill" data-vote-fill></div></div>
+              </div>
             </div>
-            <div class="upcoming-card">
-              <div class="upcoming-icon">CP</div>
+            <div class="upcoming-card" data-strategy-id="crypto-pulse">
+              <div class="upcoming-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h3.5l1.8-6 3.4 12 2-9.5 1.5 3.5H21"/></svg></div>
               <h4>Crypto Pulse</h4>
               <p>Extends the same rules-first approach to major coins, sized smaller for the swings.</p>
+              <div class="upcoming-vote">
+                <div class="upcoming-vote-row">
+                  <span class="upcoming-vote-count" data-vote-count>0 votes</span>
+                  <button class="upcoming-vote-btn" type="button" data-vote-btn>Vote</button>
+                </div>
+                <div class="upcoming-vote-track"><div class="upcoming-vote-fill" data-vote-fill></div></div>
+              </div>
             </div>
           </div>
         </div>
@@ -408,24 +459,32 @@
 <script src="zelos-xp.js"></script>
 <script src="zelos-alert-modal.js"></script>
 
-<!-- 3D globe (hero) — globe.gl bundles three.js; mock heat data until real
-     market data is wired in. Rendering pauses off-screen — see zelos-globe.js -->
-<script src="https://cdn.jsdelivr.net/npm/globe.gl"></script>
+<!-- 3D globe (hero) — self-contained WebGL, no libraries. Real sun position and
+     real exchange open/closed state. Rendering pauses off-screen — see zelos-globe.js -->
 <script src="zelos-globe.js"></script>
 <script>
 (function(){
   var el = document.getElementById('heroGlobe');
   if (!el || !window.ZelosGlobe) return;
   ZelosGlobe.mount({
+    style: 'blend',
     el: el,
     autoRotate: true,
     enableZoom: false,
     altitude: 2.3,
-    badges: [
-      { name:'US', lat:39, lng:-98, pct:1.21 },
-      { name:'China', lat:35, lng:103, pct:-0.87 },
-      { name:'Germany', lat:51, lng:10, pct:0.48 }
-    ]
+    onReady: function(g){
+      var lab = document.getElementById('heroGlobeLabel');
+      function upd(){
+        if (!lab) return;
+        var open = g.exchanges().filter(function(x){ return x.open; });
+        lab.textContent = open.length ? (open.length + ' of 17 major exchanges open now') : 'All major exchanges closed right now';
+      }
+      function nyse(){
+        var x = g.exchanges().filter(function(e){ return e.id === 'NYSE'; })[0], c = document.getElementById('heroNyse');
+        if (x && c) c.innerHTML = 'NYSE &middot; <span class="' + (x.open ? 'up' : '') + '">' + x.label.replace(' local', ' ET') + '</span>';
+      }
+      upd(); nyse(); setInterval(function(){ upd(); nyse(); }, 60000);
+    }
   });
 })();
 </script>
@@ -744,6 +803,95 @@
   } else {
     renderSignedOut();
   }
+})();
+</script>
+
+<script>
+(function(){
+  // ---- Vote for the next strategy (Upcoming Strategies section) ----
+  // Anyone can vote, signed in or not — same trust model as XP: every
+  // visitor gets a real (possibly anonymous) Firebase uid, one vote doc per
+  // uid, public read so the tallies/bars show for everyone. See
+  // firestore.rules (strategyVotes) for the write rule this depends on.
+  var cfg = window.ZELOS_FIREBASE_CONFIG;
+  var ready = !!(cfg && cfg.projectId && window.firebase);
+  var db = null, auth = null;
+  if (ready) {
+    try {
+      if (!firebase.apps || !firebase.apps.length) firebase.initializeApp(cfg);
+      auth = firebase.auth(); db = firebase.firestore();
+    } catch(e){ ready = false; }
+  }
+  var cards = ready ? Array.prototype.slice.call(document.querySelectorAll('.upcoming-card[data-strategy-id]')) : [];
+  if (!ready || !cards.length) return;
+
+  var currentUid = null;
+  var myVote = null;
+  var tallies = {};
+
+  function render(){
+    var total = 0, maxCount = 0;
+    cards.forEach(function(c){
+      var n = tallies[c.getAttribute('data-strategy-id')] || 0;
+      total += n; maxCount = Math.max(maxCount, n);
+    });
+    cards.forEach(function(c){
+      var id = c.getAttribute('data-strategy-id');
+      var count = tallies[id] || 0;
+      var pct = total > 0 ? Math.round((count / total) * 100) : 0;
+      var countEl = c.querySelector('[data-vote-count]');
+      var fillEl = c.querySelector('[data-vote-fill]');
+      var btnEl = c.querySelector('[data-vote-btn]');
+      if (countEl) countEl.textContent = count + (count === 1 ? ' vote' : ' votes');
+      if (fillEl) fillEl.style.width = pct + '%';
+      var voted = myVote === id;
+      if (btnEl) { btnEl.textContent = voted ? 'Voted ✓' : 'Vote'; btnEl.classList.toggle('is-voted', voted); }
+      c.classList.toggle('is-leading', maxCount > 0 && count === maxCount);
+    });
+  }
+
+  function loadTallies(){
+    db.collection('strategyVotes').get().then(function(snap){
+      tallies = {}; myVote = null;
+      snap.forEach(function(doc){
+        var d = doc.data() || {};
+        if (d.strategyId) tallies[d.strategyId] = (tallies[d.strategyId] || 0) + 1;
+        if (doc.id === currentUid && d.strategyId) myVote = d.strategyId;
+      });
+      render();
+    }).catch(function(){});
+  }
+
+  function castVote(strategyId){
+    if (!currentUid) return;
+    var ref = db.collection('strategyVotes').doc(currentUid);
+    if (myVote === strategyId) {
+      tallies[strategyId] = Math.max(0, (tallies[strategyId] || 1) - 1);
+      myVote = null;
+      render();
+      ref.delete().catch(function(){ loadTallies(); });
+    } else {
+      var prev = myVote;
+      if (prev) tallies[prev] = Math.max(0, (tallies[prev] || 1) - 1);
+      tallies[strategyId] = (tallies[strategyId] || 0) + 1;
+      myVote = strategyId;
+      render();
+      ref.set({ strategyId: strategyId, updatedAt: firebase.firestore.FieldValue.serverTimestamp() })
+        .catch(function(){ loadTallies(); });
+    }
+  }
+
+  cards.forEach(function(c){
+    var btn = c.querySelector('[data-vote-btn]');
+    if (!btn) return;
+    btn.addEventListener('click', function(){ if (currentUid) castVote(c.getAttribute('data-strategy-id')); });
+  });
+
+  auth.onAuthStateChanged(function(user){
+    if (!user) { auth.signInAnonymously().catch(function(){}); return; }
+    currentUid = user.uid;
+    loadTallies();
+  });
 })();
 </script>
 

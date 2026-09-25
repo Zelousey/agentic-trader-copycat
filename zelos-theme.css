@@ -228,6 +228,16 @@ body.zt-body{
 .nav-mobile-panel{
   display:none; flex-direction:column; gap:2px; padding:10px 0 14px;
   border-top:1px solid var(--border-soft);
+  /* Fix: .site-nav is position:sticky, so once the open menu's link list is
+     taller than the viewport, the extra items get clipped at the sticky
+     ceiling instead of being reachable — a finger-drag over the menu just
+     scrolled the whole (short, already-pinned) page instead of the menu
+     itself. Giving the panel its own bounded, scrollable box makes it
+     independently scrollable so the rest of the list is always reachable. */
+  max-height:calc(100vh - 66px);
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
 }
 .nav-mobile-panel a{
   font-size:0.92rem; color:var(--ink-2); text-decoration:none; padding:11px 4px; border-radius:3px;
@@ -547,11 +557,35 @@ body.zt-body::after{
   display:flex; flex-direction:column; gap:8px; background:var(--bg-soft);
 }
 .upcoming-icon{
-  width:30px; height:30px; border-radius:3px; background:var(--surface-2); color:var(--accent);
-  display:flex; align-items:center; justify-content:center; font-size:0.85rem; font-weight:700;
+  width:34px; height:34px; border-radius:3px; background:var(--surface-2); color:var(--accent);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
 }
+.upcoming-icon svg{ width:19px; height:19px; }
 .upcoming-card h4{ font-size:0.92rem; margin:0; }
 .upcoming-card p{ font-size:0.78rem; color:var(--muted); line-height:1.45; }
+
+/* vote-for-next-strategy: a small dashed bar-meter, same visual language as
+   the mini charts on the dashboard's agent cards (dashed gridline look). */
+.upcoming-vote{ margin-top:auto; padding-top:10px; border-top:1px dashed var(--border-soft); }
+.upcoming-vote-row{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.upcoming-vote-count{ font-family:var(--mono); font-size:0.72rem; color:var(--muted); }
+.upcoming-vote-btn{
+  font-family:var(--sans); font-size:0.72rem; font-weight:700; letter-spacing:0.02em;
+  padding:5px 10px; border-radius:999px; border:1px solid var(--border); background:transparent;
+  color:var(--ink-2); cursor:pointer; transition:border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+  display:inline-flex; align-items:center; gap:5px;
+}
+.upcoming-vote-btn:hover{ border-color:var(--accent); color:var(--ink); }
+.upcoming-vote-btn.is-voted{ background:var(--accent-soft); border-color:var(--accent); color:var(--accent); }
+.upcoming-vote-track{
+  margin-top:8px; height:6px; border-radius:999px; background-image:repeating-linear-gradient(90deg, var(--border-soft) 0 4px, transparent 4px 8px);
+  background-color:var(--surface-2); overflow:hidden; position:relative;
+}
+.upcoming-vote-fill{
+  height:100%; border-radius:999px; background:var(--accent); width:0%;
+  transition:width 0.4s ease;
+}
+.upcoming-card.is-leading{ border-color:var(--accent); box-shadow:0 0 0 1px var(--accent); }
 
 /* sidebar cards */
 .dash-side{ display:flex; flex-direction:column; gap:18px; }
@@ -756,3 +790,29 @@ body.zt-body::after{
   color:var(--muted); display:flex; align-items:center; gap:6px; pointer-events:none;
 }
 .globe-live-tag .dot{ width:6px; height:6px; border-radius:50%; background:var(--bull); box-shadow:0 0 6px var(--bull-glow); }
+
+/* ---- globe country card (hover preview / click to pin) ---- */
+.globe-card{
+  position:absolute; z-index:6; width:290px; max-width:calc(100% - 16px); pointer-events:none;
+  background:rgba(12,14,18,0.94); border:1px solid var(--border); border-radius:var(--radius-sm, 4px);
+  box-shadow:0 14px 34px rgba(0,0,0,0.55); padding:12px 14px; font-size:0.8rem; color:var(--ink);
+  font-family:var(--sans, 'IBM Plex Sans', system-ui, sans-serif); text-align:left;
+  backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+}
+.globe-card.is-pinned{ pointer-events:auto; max-height:calc(100% - 16px); overflow:auto; border-color:var(--accent-line, var(--accent)); }
+.globe-card.is-docked{ width:auto; max-height:55%; overflow:auto; }
+.globe-card .gc-head{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; padding-right:18px; }
+.globe-card .gc-head b{ font-size:0.98rem; }
+.globe-card .gc-big{ font-family:var(--mono); font-size:0.92rem; font-weight:600; }
+.globe-card .gc-sub{ color:var(--muted); font-size:0.72rem; margin-top:2px; }
+.globe-card .gc-sec{ font-family:var(--mono); font-size:0.62rem; letter-spacing:0.07em; text-transform:uppercase; color:var(--accent); margin:10px 0 4px; }
+.globe-card .gc-row{ display:flex; justify-content:space-between; gap:8px; padding:2px 0; font-family:var(--mono); font-size:0.76rem; }
+.globe-card .gc-row b{ font-weight:600; }
+.globe-card .gc-row em{ color:var(--muted); font-style:normal; font-size:0.7rem; }
+.globe-card .gc-why{ color:var(--muted); font-size:0.7rem; line-height:1.4; margin:0 0 4px; }
+.globe-card .gc-news{ font-size:0.74rem; line-height:1.45; color:var(--ink-2, var(--ink)); margin:2px 0 2px; }
+.globe-card .gc-news span{ color:var(--muted); font-size:0.68rem; }
+.globe-card .gc-up{ color:var(--bull); } .globe-card .gc-dn{ color:var(--danger); } .globe-card .gc-na{ color:var(--muted); }
+.globe-card .gc-foot{ margin-top:10px; padding-top:8px; border-top:1px solid var(--border); color:var(--muted); font-size:0.66rem; line-height:1.45; }
+.globe-card .gc-close{ position:absolute; top:6px; right:8px; background:none; border:0; color:var(--muted); font-size:1.1rem; cursor:pointer; line-height:1; }
+.globe-card .gc-close:hover{ color:var(--ink); }
